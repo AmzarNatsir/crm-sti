@@ -75,86 +75,37 @@
             @endif
 
             <!-- pages -->
-            <div class="header-item d-none d-sm-flex">
+            {{-- <div class="header-item d-none d-sm-flex">
                 <div class="dropdown me-2">
-                    <a href="javascript:void(0);" class="btn topbar-link topbar-teal-link" data-bs-toggle="dropdown">
-                        <i class="ti ti-layout-grid-add"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
 
-                        <!-- Item-->
-                        <a href="{{url('contacts')}}" class="dropdown-item">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="d-flex mb-1 fw-semibold text-dark">Contacts</span>
-                                    <span class="fs-13">View All the Contacts</span>
-                                </div>
-                                <i class="ti ti-chevron-right-pipe text-dark"></i>
-                            </div>
-                        </a>
-
-                        <!-- Item-->
-                        <a href="{{url('pipeline')}}" class="dropdown-item">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="d-flex mb-1 fw-semibold text-dark">Pipeline</span>
-                                    <span class="fs-13">View All the Pipeline</span>
-                                </div>
-                                <i class="ti ti-chevron-right-pipe text-dark"></i>
-                            </div>
-                        </a>
-
-                        <!-- Item-->
-                        <a href="{{url('activities')}}" class="dropdown-item">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="d-flex mb-1 fw-semibold text-dark">Activities</span>
-                                    <span class="fs-13">Activities</span>
-                                </div>
-                                <i class="ti ti-chevron-right-pipe text-dark"></i>
-                            </div>
-                        </a>
-
-                        <!-- Item-->
-                        <a href="{{url('analytics')}}" class="dropdown-item">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <span class="d-flex mb-1 fw-semibold text-dark">Analytics</span>
-                                    <span class="fs-13">Analytics</span>
-                                </div>
-                                <i class="ti ti-chevron-right-pipe text-dark"></i>
-                            </div>
-                        </a>
-
-                    </div>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- faq -->
-            <div class="header-item d-none d-sm-flex">
+            {{-- <div class="header-item d-none d-sm-flex">
                 <div class="dropdown me-2">
                     <a href="{{url('faq')}}" class="btn topbar-link topbar-indigo-link"><i class="ti ti-help-hexagon"></i></a>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- report -->
-            <div class="header-item d-none d-sm-flex">
+            {{-- <div class="header-item d-none d-sm-flex">
                 <div class="dropdown me-2">
                     <a href="{{url('lead-reports')}}" class="btn topbar-link topbar-warning-link"><i class="ti ti-chart-pie"></i></a>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="header-line"></div>
 
                 <!-- message -->
-            <div class="header-item">
+            {{-- <div class="header-item">
                 <div class="dropdown me-2">
                     <a href="{{url('chat')}}" class="btn topbar-link">
                         <i class="ti ti-message-circle-exclamation"></i>
                         <span class="badge rounded-pill">14</span>
                     </a>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Notification Dropdown -->
             <div class="header-item">
@@ -210,7 +161,7 @@
                                         e.preventDefault();
                                         const id = this.dataset.id;
                                         const url = this.dataset.url;
-                                        
+
                                         // Mark as read
                                         fetch('{{ url("notifications") }}/' + id + '/mark-read', {
                                             method: 'POST',
@@ -245,11 +196,11 @@
                         </script>
 
                         <!-- View All-->
-                        <div class="p-2 rounded-bottom border-top text-center">
+                        {{-- <div class="p-2 rounded-bottom border-top text-center">
                             <a href="{{url('notifications')}}" class="text-center text-decoration-underline fs-14 mb-0">
                                 View All Notifications
                             </a>
-                        </div>
+                        </div> --}}
 
                     </div>
                 </div>
@@ -270,31 +221,6 @@
                             <span class="d-block fs-13">{{ auth()->user()->getRoleNames()->first() }}</span>
                         </div>
                     </div>
-
-                    <!-- Item-->
-                    <a href="{{url('profile-settings')}}" class="dropdown-item">
-                        <i class="ti ti-user-circle me-1 align-middle"></i>
-                        <span class="align-middle">Profile Settings</span>
-                    </a>
-
-                    <!-- item -->
-                    <div class="form-check form-switch form-check-reverse d-flex align-items-center justify-content-between dropdown-item mb-0">
-                        <label class="form-check-label" for="notify"><i class="ti ti-bell"></i>Notifications</label>
-                        <input class="form-check-input me-0" type="checkbox" role="switch" id="notify">
-                    </div>
-
-                    <!-- Item-->
-                    <a href="javascript:void(0);" class="dropdown-item">
-                        <i class="ti ti-help-circle me-1 align-middle"></i>
-                        <span class="align-middle">Help & Support</span>
-                    </a>
-
-                    <!-- Item-->
-                    <a href="{{url('profile-settings')}}" class="dropdown-item">
-                        <i class="ti ti-settings me-1 align-middle"></i>
-                        <span class="align-middle">Settings</span>
-                    </a>
-
                     <!-- Item-->
                     <div class="pt-2 mt-2 border-top">
                         <form method="POST" action="{{ route('logout') }}">

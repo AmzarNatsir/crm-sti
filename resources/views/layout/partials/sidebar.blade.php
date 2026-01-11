@@ -160,7 +160,7 @@
                         </ul>
                     </li>
                     @endcanany
-                    @canany(["contacts_view", "prospects_view", "customers_view", "products_view", "sales_view", "reminders_view", "followups_view", "activities_view"])
+                    @canany(["contacts_view", "prospects_view", "customers_view", "products_view", "sales_view", "reminders_view", "followups_view", "activities_view", "delivery_schedule_view", "approval_center_view"])
                     <li class="menu-title"><span>CRM</span></li>
                     <li>
                         <ul>
@@ -184,12 +184,16 @@
                                 <a href="{{url('sales')}}"><i class="ti ti-list-check"></i><span>Sales</span></a>
                             </li>
                             @endcan
+                            @can("delivery_schedule_view")
                             <li class="{{ Request::is('delivery-schedule*') ? 'active' : '' }}">
                                 <a href="{{ route('delivery-schedule.index') }}"><i class="ti ti-truck"></i><span>Delivery Schedule</span></a>
                             </li>
+                            @endcan
+                            @can("approval-center_view")
                             <li class="{{ Request::is('approvals*') ? 'active' : '' }}">
                                 <a href="{{ route('approvals.index') }}"><i class="ti ti-check-box"></i><span>Approval Center</span></a>
                             </li>
+                            @endcan
                             @can("reminders_view")
                             <li class="{{ Request::is('reminders', 'reminders-list', 'reminder-details') ? 'active' : '' }}">
                                 <a href="{{url('reminders')}}"><i class="ti ti-file-star"></i><span>Reminder</span></a>
