@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+@if (Route::is('layout-hidden'))
+    <html lang="en" data-layout="hidden">
+@elseif (Route::is('layout-hover-view'))
+    <html lang="en" data-layout="hoverview">
+@elseif (Route::is('layout-mini'))
+    <html lang="en" data-layout="mini">
+@elseif (Route::is('layout-rtl'))
+    <html lang="en" dir="rtl">
+@elseif (Route::is('layout-dark'))
+    <html lang="en" data-bs-theme="dark">
+@elseif (Route::is('layout-fullwidth'))
+    <html lang="en" data-layout="full-width">
+@else
+    <html lang="en">
+@endif
+
+{{-- HEAD TAG --}}
+
+<head>
+
+    @include('layout.partials.title-meta')
+
+    @include('layout.partials.head-css')
+
+</head>
+
+{{-- BODY TAG --}}
+
+@if (!Route::is(['layout-mini', 'login', 'email-verification', 'forgot-password', 'register', 'reset-password', 'success', 'two-step-verification','error-404', 'error-500', 'under-maintenance', 'coming-soon']))
+<body>
+@endif
+
+@if (Route::is(['layout-mini']))
+<body class="mini-sidebar">
+@endif
+
+@if (Route::is(['login']))
+<body class="account-page bg-white">
+@endif
+
+@if (Route::is(['coming-soon']))
+<body class="comming-soon">
+@endif
+
+@if (Route::is(['email-verification', 'forgot-password', 'register', 'reset-password', 'success', 'two-step-verification']))
+<body class="account-page">
+@endif
+
+@if (Route::is(['error-404', 'error-500', 'under-maintenance']))
+<body class="error-page">
+@endif
+
+    <!-- Start Main Wrapper -->
+    <div class="main-wrapper">
+
+    @if (!Route::is(['login', 'register', 'forgot-password','reset-password', 'success', 'email-verification', 'two-step-verification', 'lock-screen', 'error-404', 'error-500', 'coming-soon', 'under-maintenance']))
+        @include('layout.partials.header')
+
+        @include('layout.partials.sidebar')
+    @endif
+
+        @yield('content')   
+
+        @component('components.modal-popup')
+        @endcomponent
+
+        <!-- Global Image Preview Modal -->
+        <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content bg-transparent border-0 shadow-none">
+                    <div class="modal-body p-0 text-center position-relative">
+                        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <img src="" id="globalPreviewImage" class="img-fluid rounded shadow-lg" style="max-height: 85vh;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- End Main Wrapper -->
+
+    @include('layout.partials.footer-scripts')
+
+</body>
+</html>

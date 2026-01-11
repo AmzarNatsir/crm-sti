@@ -1,0 +1,85 @@
+<!-- Add Product -->
+<form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="mb-3">
+                    <label class="form-label">Product Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Product Image</label>
+                    <input type="file" class="form-control" name="image" accept="image/*" onchange="previewImage(this, 'product-image-preview')">
+                    <div class="mt-2 text-center">
+                        <img id="product-image-preview" src="#" alt="Preview" style="display:none; max-width: 150px; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+                </div>
+            </div>
+    <script>
+        if (typeof previewImage !== 'function') {
+            function previewImage(input, previewId) {
+                const preview = document.getElementById(previewId);
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        }
+    </script>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Type <span class="text-danger">*</span></label>
+                    <select class="form-select select2" name="type_id" required>
+                        <option value="">Select Type</option>
+                        @foreach($types as $type)
+                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Merk <span class="text-danger">*</span></label>
+                    <select class="form-select select2" name="merk_id" required>
+                        <option value="">Select Merk</option>
+                        @foreach($merks as $merk)
+                            <option value="{{ $merk->id }}">{{ $merk->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Price <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="price" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Margin</label>
+                    <input type="text" class="form-control" name="margin">
+                </div>
+            </div>
+             <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="is_active">
+                        <option value="1" selected>Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-end">
+        <a href="#" class="btn btn-light me-2" data-bs-dismiss="offcanvas">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
