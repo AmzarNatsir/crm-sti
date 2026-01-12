@@ -6,14 +6,14 @@
 
             <div class="row">
                 <div class="col-lg-10 mx-auto">
-                    
+
                     <h6 class="mb-3 fs-14"> <a href="{{route('sales.index')}}"><i class="ti ti-arrow-left me-1"></i>Sales List</a></h6>
 
                     <div class="card">
                         <div class="card-body">
                             <!-- Header -->
                             <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
-                                <img src="{{URL::asset('build/img/logo.svg')}}" class="invoice-light-logo" width="150" alt="logo">
+                                <img src="{{URL::asset('build/img/logo_app.svg')}}" class="invoice-light-logo" width="150" alt="logo">
                                 <span class="badge bg-info-subtle text-info-emphasis fs-14"> #{{ $order->invoice_no }}</span>
                             </div>
 
@@ -98,7 +98,7 @@
 
                 </div>
             </div>
-            
+
         </div>
 
         @component('components.footer')

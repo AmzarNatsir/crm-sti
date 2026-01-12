@@ -21,7 +21,7 @@
             <div>
                 <!-- Logo Normal -->
                 <a href="{{url('home')}}" class="logo logo-normal">
-                    <img src="{{URL::asset('build/img/logo.svg')}}" alt="Logo">
+                    <img src="{{URL::asset('build/img/logo_app.svg')}}" alt="Logo" style="width: 80%">
                 </a>
 
                 <!-- Logo Small -->

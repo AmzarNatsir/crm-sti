@@ -20,7 +20,7 @@
                         <form action="{{ route('login') }}" method="POST" class=" vh-100 d-flex justify-content-between flex-column p-4 pb-0">
                             @csrf
                             <div class="text-center mb-4 auth-logo">
-                                <img src="{{URL::asset('build/img/logo.svg')}}" class="img-fluid" alt="Logo">
+                                <img src="{{URL::asset('build/img/logo_app.svg')}}" class="img-fluid" alt="Logo">
                             </div>
                             <div>
                                 <div class="mb-3">
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="text-center pb-4">
-                                <p class="text-dark mb-0">Copyright &copy; <script>document.write(new Date().getFullYear())</script> - CRMS - PTTANI</p>
+                                <p class="text-dark mb-0">Copyright &copy; <script>document.write(new Date().getFullYear())</script> - CRMS - SEJATI</p>
                             </div>
                         </form>
                     </div> <!-- end col -->
