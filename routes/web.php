@@ -183,6 +183,7 @@ Route::middleware('auth')->group(function () {
     // Report Routes
     Route::get('sales-reports', [\App\Http\Controllers\SalesReportController::class, 'index'])->name('reports.sales.index');
     Route::get('sales-reports/datatables', [\App\Http\Controllers\SalesReportController::class, 'datatables'])->name('reports.sales.datatables');
+    Route::get('sales-reports/{id}', [\App\Http\Controllers\SalesReportController::class, 'show'])->name('reports.sales.show');
     Route::get('sales-reports/export/pdf', [\App\Http\Controllers\SalesReportController::class, 'exportPdf'])->name('reports.sales.export.pdf');
     Route::get('sales-reports/export/excel', [\App\Http\Controllers\SalesReportController::class, 'exportExcel'])->name('reports.sales.export.excel');
 

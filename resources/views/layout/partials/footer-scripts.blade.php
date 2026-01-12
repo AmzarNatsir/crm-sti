@@ -144,6 +144,34 @@
         @if ($errors->any())
             showToast('error', "{{ $errors->first() }}");
         @endif
+
+        // Sidebar Scroll Persistence
+        $(document).ready(function() {
+            const sidebarInner = document.querySelector('.sidebar-inner');
+            if (sidebarInner) {
+                const restoreScroll = () => {
+                    const scrollPos = localStorage.getItem('sidebarScroll');
+                    const simpleBarWrapper = sidebarInner.querySelector('.simplebar-content-wrapper');
+                    const activeLink = document.querySelector('.sidebar-menu li.active');
+                    
+                    if (scrollPos && simpleBarWrapper) {
+                        simpleBarWrapper.scrollTop = scrollPos;
+                    } else if (activeLink && simpleBarWrapper) {
+                        activeLink.scrollIntoView({ block: 'center' });
+                    }
+                };
+
+                // Small delay to ensure SimpleBar is initialized
+                setTimeout(restoreScroll, 150);
+
+                $(document).on('click', '.sidebar-menu a', function() {
+                    const simpleBarWrapper = sidebarInner.querySelector('.simplebar-content-wrapper');
+                    if (simpleBarWrapper) {
+                        localStorage.setItem('sidebarScroll', simpleBarWrapper.scrollTop);
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

@@ -72,6 +72,7 @@
                                     <th>Campaign</th>
                                     <th>Total Invoice</th>
                                     <th>Diskon</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -89,6 +90,25 @@
                 </div>
             </div>
             <!-- /Sales List -->
+            
+            <!-- Detail Modal -->
+            <div class="modal fade" id="detail_modal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Sales Detail</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="detail_content">
+                            <!-- Content will be loaded here -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Detail Modal -->
 
         </div>
     </div>
@@ -116,6 +136,7 @@
                 { data: 'campaign_name', name: 'campaign_name' },
                 { data: 'total_amount', name: 'total_amount' },
                 { data: 'invoice_discount', name: 'invoice_discount' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
             ],
             order: [[1, 'desc']],
             dom: '<"top">rt<"bottom"lp><"clear">',
@@ -145,6 +166,21 @@
             const start = $('#filter_start_date').val();
             const end = $('#filter_end_date').val();
             window.open("{{ route('reports.sales.export.pdf') }}?start_date=" + start + "&end_date=" + end, '_blank');
+        });
+
+        // View Detail Modal
+        $(document).on('click', '.view-detail', function() {
+            const id = $(this).data('id');
+            const url = "{{ url('sales-reports') }}/" + id;
+
+            $('#detail_content').html('<div class="text-center p-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+            $('#detail_modal').modal('show');
+
+            $.get(url, function(data) {
+                $('#detail_content').html(data);
+            }).fail(function() {
+                $('#detail_content').html('<div class="alert alert-danger">Error loading details. Please try again.</div>');
+            });
         });
     });
 </script>

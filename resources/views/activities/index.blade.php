@@ -13,8 +13,31 @@
                     </ol>
                 </nav>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <!-- <div class="d-flex align-items-center gap-2">
                  <a href="{{ route('activities.create') }}" class="btn btn-primary"><i class="ti ti-plus me-1"></i> Add Activity</a>
+            </div> -->
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Type</label>
+                        <select id="filter_type" class="form-select select2">
+                            <option value="">All Types</option>
+                            @foreach($types as $type)
+                                <option value="{{ $type }}">{{ $type }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Created At Range</label>
+                        <input type="text" id="filter_date" class="form-control" placeholder="Select Date Range">
+                    </div>
+                    <div class="col-md-2">
+                        <button id="clear_filters" class="btn btn-secondary w-100">Clear</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -29,10 +52,10 @@
                                 <th>Customer</th>
                                 <th>User</th>
                                 <th>Notes</th>
-                                <th>Follow Up Date</th>
                                 <th>Status</th>
                                 <th>Created At</th>
-                                <th width="280px">Action</th>
+                                <!-- <th>Follow Up Date</th> -->
+                                <!-- <th width="280px">Action</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -61,18 +84,28 @@
         var table = $('#activityTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('activities.datatables') }}",
-            order: [[7, 'desc']], // Default order by Created At
+            ajax: {
+                url: "{{ route('activities.datatables') }}",
+                data: function (d) {
+                    d.type = $('#filter_type').val();
+                    let dateRange = $('#filter_date').val().split(' to ');
+                    if (dateRange.length === 2) {
+                        d.start_date = dateRange[0];
+                        d.end_date = dateRange[1];
+                    }
+                }
+            },
+            order: [[6, 'desc']], // Default order by Created At
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                 {data: 'type', name: 'type'},
                 {data: 'customer_name', name: 'customer.name'},
                 {data: 'user_name', name: 'user.name'},
                 {data: 'notes', name: 'notes'},
-                {data: 'follow_up_date', name: 'follow_up_date'},
                 {data: 'status', name: 'status'},
                 {data: 'created_at', name: 'created_at'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
+                // {data: 'follow_up_date', name: 'follow_up_date'},
+                // {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
 
@@ -90,6 +123,29 @@
                     }
                 });
             }
+        });
+
+        // Date range picker initialization
+        $('#filter_date').flatpickr({
+            mode: 'range',
+            dateFormat: 'Y-m-d',
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    table.draw();
+                }
+            }
+        });
+
+        $('#filter_type').on('change', function() {
+            table.draw();
+        });
+
+        $('#clear_filters').on('click', function() {
+            $('#filter_type').val('').trigger('change');
+            if ($('#filter_date')[0]._flatpickr) {
+                $('#filter_date')[0]._flatpickr.clear();
+            }
+            table.draw();
         });
     });
 </script>

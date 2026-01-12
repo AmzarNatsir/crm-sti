@@ -32,7 +32,17 @@ class SalesReportController extends Controller
             ->editColumn('invoice_date', fn($order) => $order->invoice_date->format('d M Y'))
             ->editColumn('total_amount', fn($order) => number_format($order->total_amount, 2))
             ->editColumn('invoice_discount', fn($order) => number_format($order->invoice_discount, 2))
+            ->addColumn('action', function($order) {
+                return '<button type="button" class="btn btn-sm btn-info view-detail" data-id="' . $order->id . '"><i class="ti ti-eye"></i></button>';
+            })
+            ->rawColumns(['action'])
             ->make(true);
+    }
+
+    public function show($id)
+    {
+        $order = Order::with(['customer', 'paymentMethod', 'campaign', 'items.product'])->findOrFail($id);
+        return view('reports.partials.sales_detail', compact('order'));
     }
 
     public function exportExcel(Request $request)

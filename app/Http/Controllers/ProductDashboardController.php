@@ -17,7 +17,7 @@ class ProductDashboardController extends Controller
         // 1. KPI Stats
         $totalProducts = Product::count();
         $activeProducts = Product::where('is_active', true)->count();
-        $totalStockValue = Product::sum(DB::raw('price')); // Simple sum of prices as proxy for value
+        $totalStockValue = \App\Models\ProductPrice::where('type', 'CS')->sum('price'); // Simple sum of CS prices as proxy for value
         $totalUnitsSold = OrderItemsModel::sum('qty');
 
         // 2. Revenue by Product (Top 10)

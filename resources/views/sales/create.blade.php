@@ -94,9 +94,10 @@
                                     <table class="table invoice-table border" id="items-table">
                                         <thead>
                                             <tr>
-                                                <th style="width: 40%;">Product</th>
+                                                <th style="width: 35%;">Product</th>
+                                                <th style="width: 15%;">Type</th>
                                                 <th>Price</th>
-                                                <th style="width: 15%;">Qty</th>
+                                                <th style="width: 10%;">Qty</th>
                                                 <th>Subtotal</th>
                                                 <th></th>
                                             </tr>
@@ -107,11 +108,26 @@
                                                     <select class="form-select product-select select2" name="items[0][product_id]" required>
                                                         <option value="">Select Product</option>
                                                         @foreach($products as $product)
-                                                            <option value="{{$product->id}}" data-price="{{$product->price}}">{{$product->name}}</option>
+                                                            @php
+                                                                $prices = $product->prices->pluck('price', 'type')->toArray();
+                                                            @endphp
+                                                            <option value="{{$product->id}}" 
+                                                                data-price-cs="{{ isset($prices['CS']) ? (int)$prices['CS'] : 0 }}"
+                                                                data-price-r1="{{ isset($prices['R1']) ? (int)$prices['R1'] : 0 }}"
+                                                                data-price-r2="{{ isset($prices['R2']) ? (int)$prices['R2'] : 0 }}">
+                                                                {{$product->name}}
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 </td>
-                                                <td><input type="text" class="form-control price-input" name="items[0][price]" required></td>
+                                                <td>
+                                                    <select class="form-select type-select" name="items[0][price_type]" required>
+                                                        <option value="CS">CS</option>
+                                                        <option value="R1">R1</option>
+                                                        <option value="R2">R2</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="text" class="form-control price-input" name="items[0][price]" readonly required></td>
                                                 <td><input type="number" class="form-control qty-input" name="items[0][qty]" value="1" min="1" required></td>
                                                 <td><input type="text" class="form-control subtotal-input" readonly value="0"></td>
                                                 <td><button type="button" class="btn remove-item btn-sm text-danger"><i class="ti ti-trash"></i></button></td>
@@ -235,7 +251,9 @@
             // Update names
             let select = newRow.find('.product-select');
             select.attr('name', `items[${itemCount}][product_id]`).val('');
-            newRow.find('.price-input').attr('name', `items[${itemCount}][price]`);
+            let priceInput = newRow.find('.price-input');
+            priceInput.attr('name', `items[${itemCount}][price]`).attr('readonly', true);
+            newRow.find('.type-select').attr('name', `items[${itemCount}][price_type]`);
             newRow.find('.qty-input').attr('name', `items[${itemCount}][qty]`);
             
             $('.invoices-list').append(newRow);
@@ -279,8 +297,22 @@
             }
 
             let row = $(this).closest('tr');
-            // let price = $(this).find(':selected').data('price') || 0;
-            // row.find('.price-input').val(price);
+            let type = row.find('.type-select').val();
+            let price = $(this).find(':selected').data('price-' + type.toLowerCase()) || 0;
+            
+            row.find('.price-input').val(price);
+            initMask(); // Re-mask to format the new value
+            calculateRow(row);
+        });
+
+        $(document).on('change', '.type-select', function() {
+            let row = $(this).closest('tr');
+            let type = $(this).val();
+            let productSelect = row.find('.product-select');
+            let price = productSelect.find(':selected').data('price-' + type.toLowerCase()) || 0;
+            
+            row.find('.price-input').val(price);
+            initMask(); // Re-mask to format the new value
             calculateRow(row);
         });
 

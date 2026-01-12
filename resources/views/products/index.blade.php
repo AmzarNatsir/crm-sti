@@ -134,7 +134,7 @@
                 removeMaskOnSubmit: false,
                 rightAlign: false,
                 allowMinus: false
-            }).mask(document.querySelectorAll("input[name='price']"));
+            }).mask(document.querySelectorAll("input[name='price'], input[name='price_cs'], input[name='price_r1'], input[name='price_r2']"));
 
             Inputmask({
                 alias: "numeric",
@@ -166,7 +166,18 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                form.submit();
+                $.ajax({
+                    url: $(form).attr('action'),
+                    type: 'DELETE',
+                    data: $(form).serialize(),
+                    success: function(response) {
+                        showToast('success', response.message || 'Product deleted successfully');
+                        $('#products_list').DataTable().ajax.reload();
+                    },
+                    error: function(xhr) {
+                        showToast('error', 'Error deleting product');
+                    }
+                });
             }
         });
     });
@@ -196,7 +207,10 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    window.location.reload();
+                    $('#offcanvas_add').offcanvas('hide');
+                    showToast('success', response.message || 'Product saved successfully');
+                    $('#products_list').DataTable().ajax.reload();
+                    submitBtn.prop('disabled', false).text(originalBtnText);
                 },
                 error: function(xhr) {
                     submitBtn.prop('disabled', false).text(originalBtnText);
@@ -216,7 +230,7 @@
                         });
                     } else {
                         var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'An error occurred. Please try again.';
-                        alert(msg);
+                        showToast('error', msg);
                     }
                 }
             });

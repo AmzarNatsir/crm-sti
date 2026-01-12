@@ -57,8 +57,20 @@
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="form-label">Price <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="price" required>
+                    <label class="form-label">Price CS <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="price_cs" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Price R1 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="price_r1" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Price R2 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="price_r2" required>
                 </div>
             </div>
             <div class="col-md-6">

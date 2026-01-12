@@ -12,7 +12,6 @@ class Product extends Model
         'type_id',
         'merk_id',
         'category',
-        'price',
         'margin',
         'is_active',
         'image'
@@ -40,5 +39,10 @@ class Product extends Model
     public function merk()
     {
         return $this->belongsTo(MerkModel::class, 'merk_id');
+    }
+
+    public function prices()
+    {
+        return $this->hasMany(ProductPrice::class);
     }
 }

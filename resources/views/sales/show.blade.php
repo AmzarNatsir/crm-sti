@@ -48,6 +48,7 @@
                                             <tr>
                                                 <th style="width: 50px;">#</th>
                                                 <th>Product</th>
+                                                <th class="text-center">Type</th>
                                                 <th class="text-end">Price</th>
                                                 <th class="text-center">Quantity</th>
                                                 <th class="text-end">Subtotal</th>
@@ -58,6 +59,7 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $item->product->name ?? 'Unknown Product' }}</td>
+                                                <td class="text-center">{{ $item->price_type ?? '-' }}</td>
                                                 <td class="text-end">{{ number_format($item->price, 2) }}</td>
                                                 <td class="text-center">{{ $item->qty }}</td>
                                                 <td class="text-end">{{ number_format($item->subtotal, 2) }}</td>

@@ -18,7 +18,8 @@ class ActivityController extends Controller
      */
     public function index()
     {
-        return view('activities.index');
+        $types = Activity::distinct()->pluck('type');
+        return view('activities.index', compact('types'));
     }
 
     /**
@@ -36,6 +37,20 @@ class ActivityController extends Controller
     {
         if ($request->ajax()) {
             $data = Activity::with(['customer', 'user'])->select('activities.*');
+
+            // Apply Filters
+            if ($request->has('type') && $request->type != '') {
+                $data->where('type', $request->type);
+            }
+
+            if ($request->has('start_date') && $request->start_date != '') {
+                $data->whereDate('created_at', '>=', Carbon::parse($request->start_date)->format('Y-m-d'));
+            }
+
+            if ($request->has('end_date') && $request->end_date != '') {
+                $data->whereDate('created_at', '<=', Carbon::parse($request->end_date)->format('Y-m-d'));
+            }
+
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('customer_name', function($row){

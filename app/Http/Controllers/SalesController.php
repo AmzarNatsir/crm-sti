@@ -25,7 +25,7 @@ class SalesController extends Controller
     public function create()
     {
         $customers = Customer::whereIn('type', ['customer', 'prospect'])->orderBy('created_at', 'desc')->get();
-        $products = Product::where('is_active', 1)->get();
+        $products = Product::with('prices')->where('is_active', 1)->get();
         $payment_methods = PaymentMethodModel::all();
         $campaigns = RefCompign::where('status', 'active')->get();
         
@@ -39,14 +39,16 @@ class SalesController extends Controller
             $items = $request->items;
             foreach ($items as $key => $item) {
                 if (isset($item['price'])) {
-                    $items[$key]['price'] = str_replace(['.', ','], ['', '.'], $item['price']);
+                    $val = str_replace(['.', ','], ['', '.'], $item['price']);
+                    $items[$key]['price'] = $val !== '' ? $val : 0;
                 }
             }
             $request->merge(['items' => $items]);
         }
         
         if ($request->has('invoice_discount')) {
-            $request->merge(['invoice_discount' => str_replace(['.', ','], ['', '.'], $request->invoice_discount)]);
+            $val = str_replace(['.', ','], ['', '.'], $request->invoice_discount);
+            $request->merge(['invoice_discount' => $val !== '' ? $val : 0]);
         }
 
         $request->validate([
@@ -81,11 +83,20 @@ class SalesController extends Controller
                     'uid' => (string) Str::uuid(),
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
+                    'price_type' => $item['price_type'] ?? null,
                     'qty' => $item['qty'],
                     'price' => $item['price'],
                     'subtotal' => $item['qty'] * $item['price'],
                 ]);
             }
+
+            \App\Models\Activity::create([
+                'customer_id' => $request->customer_id,
+                'user_id' => auth()->id(),
+                'type' => 'sales',
+                'status' => 'Completed',
+                'notes' => 'New Sale recorded: ' . $order->invoice_no . ' - Total: ' . number_format($request->total_amount, 2)
+            ]);
             
             // New logic: Change customer type from prospect to customer if they make a purchase
             $customer = Customer::find($request->customer_id);
