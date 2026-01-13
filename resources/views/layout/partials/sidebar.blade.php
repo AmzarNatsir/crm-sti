@@ -160,7 +160,7 @@
                         </ul>
                     </li>
                     @endcanany
-                    @canany(["contacts_view", "prospects_view", "customers_view", "products_view", "sales_view", "reminders_view", "followups_view", "activities_view", "delivery_schedule_view", "approval_center_view"])
+                    @canany(["contacts_view", "prospects_view", "customers_view", "products_view", "sales_view", "reminders_view", "followups_view", "activities_view", "approval_center_view"])
                     <li class="menu-title"><span>CRM</span></li>
                     <li>
                         <ul>
@@ -184,11 +184,6 @@
                                 <a href="{{url('sales')}}"><i class="ti ti-list-check"></i><span>Sales</span></a>
                             </li>
                             @endcan
-                            @can("delivery_schedule_view")
-                            <li class="{{ Request::is('delivery-schedule*') ? 'active' : '' }}">
-                                <a href="{{ route('delivery-schedule.index') }}"><i class="ti ti-truck"></i><span>Delivery Schedule</span></a>
-                            </li>
-                            @endcan
                             @can("approval-center_view")
                             <li class="{{ Request::is('approvals*') ? 'active' : '' }}">
                                 <a href="{{ route('approvals.index') }}"><i class="ti ti-check-box"></i><span>Approval Center</span></a>
@@ -207,6 +202,18 @@
                             @can("activities_view")
                             <li class="{{ Request::is('activities', 'activity-calls', 'activity-mail', 'activity-meeting', 'activity-task') ? 'active' : '' }}">
                                 <a href="{{url('activities')}}"><i class="ti ti-bounce-right"></i><span>Activities</span></a>
+                            </li>
+                            @endcan
+                        </ul>
+                    </li>
+                    @endcanany
+                    @canany(["delivery_schedule_view"])
+                    <li class="menu-title"><span>LOGISTICS</span></li>
+                    <li>
+                        <ul>
+                            @can("delivery_schedule_view")
+                            <li class="{{ Request::is('delivery-schedule*') ? 'active' : '' }}">
+                                <a href="{{ route('delivery-schedule.index') }}"><i class="ti ti-truck"></i><span>Delivery Schedule</span></a>
                             </li>
                             @endcan
                         </ul>
