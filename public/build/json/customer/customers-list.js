@@ -204,4 +204,262 @@ $(document).ready(function () {
             myModal.show();
         }
     });
+
+    // ========================================
+    // CUSTOMER IMPORT FUNCTIONALITY
+    // ========================================
+
+    var selectedFile = null;
+    var previewData = null;
+
+    // Reset import modal when opened
+    $('#importModal').on('show.bs.modal', function () {
+        resetImportModal();
+    });
+
+    function resetImportModal() {
+        selectedFile = null;
+        previewData = null;
+        $('#importFile').val('');
+        $('#fileInfo').hide();
+        $('#fileError').hide();
+        $('#uploadSection').show();
+        $('#previewSection').hide();
+        $('#progressSection').hide();
+        $('#btnPreview').hide();
+        $('#btnImport').hide();
+        $('#btnClose').prop('disabled', false).text('Close');
+    }
+
+    // File selection handler
+    $('#importFile').on('change', function (e) {
+        var file = e.target.files[0];
+        $('#fileError').hide();
+
+        if (!file) {
+            $('#fileInfo').hide();
+            $('#btnPreview').hide();
+            selectedFile = null;
+            return;
+        }
+
+        // Validate file type
+        var validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+        if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/i)) {
+            $('#fileError').text('Please upload a valid Excel file (.xlsx or .xls)').show();
+            $('#fileInfo').hide();
+            $('#btnPreview').hide();
+            selectedFile = null;
+            return;
+        }
+
+        // Validate file size (5MB max)
+        var maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file.size > maxSize) {
+            $('#fileError').text('File size exceeds 5MB limit').show();
+            $('#fileInfo').hide();
+            $('#btnPreview').hide();
+            selectedFile = null;
+            return;
+        }
+
+        // File is valid
+        selectedFile = file;
+        var fileSizeKB = (file.size / 1024).toFixed(2);
+        $('#fileName').text(file.name);
+        $('#fileSize').text(fileSizeKB + ' KB');
+        $('#fileInfo').show();
+        $('#btnPreview').show();
+    });
+
+    // Preview button handler
+    $('#btnPreview').on('click', function () {
+        if (!selectedFile) {
+            Swal.fire('Error', 'Please select a file first', 'error');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('_token', window.csrfToken);
+
+        // Show loading
+        var btn = $(this);
+        var originalText = btn.html();
+        btn.prop('disabled', true).html('<i class="ti ti-loader me-1"></i>Processing...');
+
+        $.ajax({
+            url: window.importPreviewUrl,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    previewData = response.data;
+                    displayPreview(response.data);
+                    $('#uploadSection').hide();
+                    $('#previewSection').show();
+                    btn.hide();
+                    $('#btnImport').show();
+                } else {
+                    Swal.fire('Error', response.message || 'Failed to process file', 'error');
+                }
+                btn.prop('disabled', false).html(originalText);
+            },
+            error: function (xhr) {
+                var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error processing file';
+                Swal.fire('Error', msg, 'error');
+                btn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+
+    function displayPreview(data) {
+        // Update summary stats
+        $('#totalRows').text(data.total_rows);
+        $('#validRows').text(data.valid_count);
+        $('#invalidRows').text(data.invalid_count);
+
+        // Build preview table
+        var tbody = $('#previewTableBody');
+        tbody.empty();
+
+        // Show valid rows first (limited to 100)
+        data.preview.forEach(function (row) {
+            var tr = $('<tr>');
+            tr.append('<td>' + row.row_number + '</td>');
+            tr.append('<td><span class="badge badge-soft-success">Valid</span></td>');
+            tr.append('<td>' + (row.data.name || '-') + '</td>');
+            tr.append('<td>' + (row.data.identity_no || '-') + '</td>');
+            tr.append('<td>' + (row.data.phone || '-') + '</td>');
+            tr.append('<td>' + (row.data.email || '-') + '</td>');
+            tr.append('<td>' + (row.data.address || '-') + '</td>');
+            tr.append('<td>-</td>');
+            tbody.append(tr);
+        });
+
+        // Show invalid rows
+        data.invalid_rows.forEach(function (row) {
+            var tr = $('<tr class="table-danger">');
+            tr.append('<td>' + row.row_number + '</td>');
+            tr.append('<td><span class="badge badge-soft-danger">Invalid</span></td>');
+            tr.append('<td>' + (row.data.name || '-') + '</td>');
+            tr.append('<td>' + (row.data.identity_no || '-') + '</td>');
+            tr.append('<td>' + (row.data.phone || '-') + '</td>');
+            tr.append('<td>' + (row.data.email || '-') + '</td>');
+            tr.append('<td>' + (row.data.address || '-') + '</td>');
+            tr.append('<td class="text-danger"><small>' + row.errors.join(', ') + '</small></td>');
+            tbody.append(tr);
+        });
+    }
+
+    // Import button handler
+    $('#btnImport').on('click', function () {
+        if (!selectedFile || !previewData) {
+            Swal.fire('Error', 'No data to import', 'error');
+            return;
+        }
+
+        if (previewData.valid_count === 0) {
+            Swal.fire('Error', 'No valid rows to import', 'error');
+            return;
+        }
+
+        // Confirm import
+        Swal.fire({
+            title: 'Confirm Import',
+            html: 'You are about to import <strong>' + previewData.valid_count + '</strong> valid records.<br>Continue?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Import!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                processImport();
+            }
+        });
+    });
+
+    function processImport() {
+        var formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('_token', window.csrfToken);
+
+        // Show progress section
+        $('#previewSection').hide();
+        $('#progressSection').show();
+        $('#btnImport').hide();
+        $('#btnClose').prop('disabled', true);
+
+        // Initialize progress
+        updateProgress(0, 0, previewData.valid_count);
+
+        $.ajax({
+            url: window.importProcessUrl,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                // Simulate progress (since we can't track real progress easily)
+                var progressInterval = setInterval(function () {
+                    var currentPercent = parseInt($('#progressBar').attr('aria-valuenow'));
+                    if (currentPercent < 90) {
+                        updateProgress(currentPercent + 10, Math.floor((currentPercent + 10) / 100 * previewData.valid_count), previewData.valid_count);
+                    }
+                }, 500);
+
+                xhr.addEventListener('loadend', function () {
+                    clearInterval(progressInterval);
+                });
+
+                return xhr;
+            },
+            success: function (response) {
+                if (response.success) {
+                    // Complete progress
+                    updateProgress(100, response.data.imported, response.data.imported);
+
+                    // Show success message
+                    setTimeout(function () {
+                        Swal.fire({
+                            title: 'Import Selesai!',
+                            html: '<strong>Berhasil:</strong> ' + response.data.imported + ' data<br>' +
+                                '<strong>Gagal:</strong> ' + response.data.failed + ' data',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Reload datatable and close modal
+                            $('#customers_list').DataTable().ajax.reload();
+                            $('#importModal').modal('hide');
+                            resetImportModal();
+                        });
+                    }, 500);
+                } else {
+                    Swal.fire('Error', response.message || 'Import failed', 'error');
+                    $('#btnClose').prop('disabled', false);
+                }
+            },
+            error: function (xhr) {
+                var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Error importing data';
+                Swal.fire('Error', msg, 'error');
+                $('#progressSection').hide();
+                $('#previewSection').show();
+                $('#btnImport').show();
+                $('#btnClose').prop('disabled', false);
+            }
+        });
+    }
+
+    function updateProgress(percent, processed, total) {
+        $('#progressBar').css('width', percent + '%')
+            .attr('aria-valuenow', percent)
+            .text(percent + '%');
+        $('#progressPercent').text(percent);
+        $('#processedCount').text(processed);
+        $('#totalCount').text(total);
+    }
 });

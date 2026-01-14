@@ -94,6 +94,7 @@
     <div class="d-flex align-items-center shadow p-1 rounded border bg-white view-icons">
         <a href="{{url('customers')}}" class="btn btn-sm p-1 border-0 fs-14 active"><i class="ti ti-list-tree"></i></a>
     </div>
+    <a href="javascript:void(0);" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#importModal"><i class="ti ti-file-import me-1"></i>Import Customer</a>
     <a href="javascript:void(0);" class="btn btn-primary btn-add-customer" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_add"><i class="ti ti-square-rounded-plus-filled me-1"></i>Add New Customer</a>
 </div>
             </div>
@@ -162,6 +163,132 @@
         <div class="offcanvas-body" id="offcanvas-add-body"></div>
     </div>
 
+    <!-- Import Customer Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Customer Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Step 1: File Upload -->
+                    <div id="uploadSection">
+                        <div class="alert alert-info">
+                            <i class="ti ti-info-circle me-2"></i>
+                            <strong>Instructions:</strong> Download the template, fill in your customer data, then upload the file to preview and import.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <a href="{{ route('customers.import.template') }}" class="btn btn-outline-primary">
+                                <i class="ti ti-download me-1"></i>Download Template
+                            </a>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="importFile" class="form-label">Upload Excel File <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="importFile" accept=".xlsx,.xls">
+                            <div class="form-text">Maximum file size: 5MB. Accepted formats: .xlsx, .xls</div>
+                            <div id="fileError" class="text-danger mt-2" style="display: none;"></div>
+                        </div>
+
+                        <div id="fileInfo" class="alert alert-success" style="display: none;">
+                            <i class="ti ti-file-check me-2"></i>
+                            <strong>File selected:</strong> <span id="fileName"></span> (<span id="fileSize"></span>)
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Preview Section -->
+                    <div id="previewSection" style="display: none;">
+                        <div class="alert alert-primary">
+                            <i class="ti ti-info-circle me-2"></i>
+                            <strong>Preview:</strong> Review the data below before importing. Invalid rows are highlighted in red.
+                        </div>
+
+                        <!-- Summary Stats -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="card border-primary">
+                                    <div class="card-body text-center">
+                                        <h3 class="mb-0" id="totalRows">0</h3>
+                                        <p class="text-muted mb-0">Total Rows</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-success">
+                                    <div class="card-body text-center">
+                                        <h3 class="mb-0 text-success" id="validRows">0</h3>
+                                        <p class="text-muted mb-0">Valid Rows</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-danger">
+                                    <div class="card-body text-center">
+                                        <h3 class="mb-0 text-danger" id="invalidRows">0</h3>
+                                        <p class="text-muted mb-0">Invalid Rows</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Table -->
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-bordered table-sm" id="previewTable">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>Status</th>
+                                        <th>Name</th>
+                                        <th>Identity No</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Address</th>
+                                        <th>Errors</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Progress Section -->
+                    <div id="progressSection" style="display: none;">
+                        <div class="alert alert-info">
+                            <i class="ti ti-loader me-2"></i>
+                            <strong>Importing...</strong> Please wait while we import your data.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Progress: <span id="progressPercent">0</span>%</label>
+                            <div class="progress" style="height: 25px;">
+                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    0%
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="progressInfo" class="text-center">
+                            <p class="mb-0">Processing: <span id="processedCount">0</span> / <span id="totalCount">0</span> records</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnClose">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnPreview" style="display: none;">
+                        <i class="ti ti-eye me-1"></i>Preview Data
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnImport" style="display: none;">
+                        <i class="ti ti-upload me-1"></i>Import Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -169,5 +296,7 @@
     window.customersDatatableUrl = "{{ route('customers.datatables') }}";
     window.customersBaseUrl = "{{ url('customers') }}";
     window.csrfToken = "{{ csrf_token() }}";
+    window.importPreviewUrl = "{{ route('customers.import.preview') }}";
+    window.importProcessUrl = "{{ route('customers.import.process') }}";
 </script>
 @endpush

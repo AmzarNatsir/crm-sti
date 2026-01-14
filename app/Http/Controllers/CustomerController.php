@@ -11,6 +11,10 @@ use App\Models\Village;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
+use App\Exports\CustomerTemplateExport;
+use App\Imports\CustomerImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
@@ -286,5 +290,106 @@ class CustomerController extends Controller
             'paymentMethods',
             'shoppingTime'
         ));
+    }
+
+    /**
+     * Download Excel template for customer import
+     */
+    public function downloadTemplate()
+    {
+        $fileName = 'customer_import_template_' . Carbon::now()->format('Ymd') . '.xlsx';
+        return Excel::download(new CustomerTemplateExport, $fileName);
+    }
+
+    /**
+     * Preview imported data with validation
+     */
+    public function previewImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:5120' // 5MB max
+        ]);
+
+        try {
+            $file = $request->file('file');
+            
+            // Create import instance
+            $import = new CustomerImport();
+            
+            // Process the file
+            Excel::import($import, $file);
+            
+            // Get validation results
+            $validRows = $import->getValidRows();
+            $invalidRows = $import->getInvalidRows();
+            
+            // Prepare preview data (limit to first 100 rows for performance)
+            $previewData = array_slice($validRows, 0, 100);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'total_rows' => count($validRows) + count($invalidRows),
+                    'valid_count' => count($validRows),
+                    'invalid_count' => count($invalidRows),
+                    'preview' => $previewData,
+                    'invalid_rows' => $invalidRows,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing file: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Process and import valid customer data
+     */
+    public function processImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:5120'
+        ]);
+
+        try {
+            $file = $request->file('file');
+            
+            // Create import instance
+            $import = new CustomerImport();
+            
+            // First, validate all rows
+            Excel::import($import, $file);
+            
+            // Get valid rows count for progress tracking
+            $totalValid = $import->getTotalValidRows();
+            
+            if ($totalValid === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No valid rows to import'
+                ], 400);
+            }
+            
+            // Process the import
+            $result = $import->import();
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'total_valid' => $totalValid,
+                    'imported' => $result['imported'],
+                    'failed' => $result['failed'],
+                    'errors' => $result['errors']
+                ],
+                'message' => "Import selesai. Berhasil: {$result['imported']} data, Gagal: {$result['failed']} data"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error importing data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

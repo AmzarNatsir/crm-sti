@@ -109,6 +109,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
     Route::get('customers/datatables', [CustomerController::class, 'datatables'])->name('customers.datatables');
     Route::get('customers/{id}/summary', [CustomerController::class, 'summary'])->name('customers.summary');
+    
+    // Customer Import Routes
+    Route::get('customers/import/template', [CustomerController::class, 'downloadTemplate'])->name('customers.import.template');
+    Route::post('customers/import/preview', [CustomerController::class, 'previewImport'])->name('customers.import.preview');
+    Route::post('customers/import/process', [CustomerController::class, 'processImport'])->name('customers.import.process');
 
     // Employee Routes
     Route::get('employees/datatables', [\App\Http\Controllers\EmployeeController::class, 'datatables'])->name('employees.datatables');
