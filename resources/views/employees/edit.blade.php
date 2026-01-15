@@ -59,6 +59,19 @@
             <input type="text" name="place_of_birth" class="form-control" value="{{ $employee->place_of_birth }}">
         </div>
         <div class="col-md-6 mb-3">
+            <label class="form-label">Last Education</label>
+            <select name="last_education" class="form-select">
+                <option value="">Select Education</option>
+                <option value="SD" {{ $employee->last_education == 'SD' ? 'selected' : '' }}>SD</option>
+                <option value="SMP" {{ $employee->last_education == 'SMP' ? 'selected' : '' }}>SMP</option>
+                <option value="SMA" {{ $employee->last_education == 'SMA' ? 'selected' : '' }}>SMA</option>
+                <option value="D3" {{ $employee->last_education == 'D3' ? 'selected' : '' }}>D3</option>
+                <option value="S1" {{ $employee->last_education == 'S1' ? 'selected' : '' }}>S1</option>
+                <option value="S2" {{ $employee->last_education == 'S2' ? 'selected' : '' }}>S2</option>
+                <option value="S3" {{ $employee->last_education == 'S3' ? 'selected' : '' }}>S3</option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
             <label class="form-label">Position</label>
             <select name="positionId" class="form-select">
                 <option value="">Select Position</option>

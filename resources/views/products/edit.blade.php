@@ -78,6 +78,12 @@
                     <input type="text" class="form-control" name="price_r2" value="{{ $product->price_r2 ? (int)$product->price_r2 : '' }}" required>
                 </div>
             </div>
+             <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Price Farmer Group</label>
+                    <input type="text" class="form-control" name="price_fg" value="{{ $product->price_fg ? (int)$product->price_fg : '' }}">
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label">Margin</label>

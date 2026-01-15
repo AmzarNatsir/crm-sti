@@ -45,7 +45,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Target Revenue</label>
-                                    <input type="number" step="0.01" class="form-control" name="target_revenue" value="{{old('target_revenue', $compign->target_revenue)}}">
+                                    <input type="text" class="form-control currency-format" name="target_revenue" value="{{old('target_revenue', number_format($compign->target_revenue, 0, '.', ','))}}">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -57,7 +57,7 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Budget</label>
-                                    <input type="number" step="0.01" class="form-control" name="badget" value="{{old('badget', $compign->badget)}}">
+                                    <input type="text" class="form-control currency-format" name="badget" value="{{old('badget', number_format($compign->badget, 0, '.', ','))}}">
                                 </div>
                             </div>
 
@@ -83,6 +83,60 @@
                                 </div>
                             </div>
 
+                            <!-- Regional Data -->
+                            <div class="col-md-12">
+                                <h5 class="mb-3 mt-3 text-primary">Company Area</h5>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Province</label>
+                                    <select name="company_area_province" id="provinsiId" class="form-select select2">
+                                        <option value="">Select Province</option>
+                                    </select>
+                                    <input type="hidden" name="company_area_province_name" id="provinsi_name" value="{{ $compign->company_area_province }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Regency</label>
+                                    <select name="company_area_regency" id="kabupatenId" class="form-select select2">
+                                        <option value="">Select Regency</option>
+                                    </select>
+                                    <input type="hidden" name="company_area_regency_name" id="kabupaten_name" value="{{ $compign->company_area_regency }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">District</label>
+                                    <select name="company_area_district" id="kecamatanId" class="form-select select2">
+                                        <option value="">Select District</option>
+                                    </select>
+                                    <input type="hidden" name="company_area_district_name" id="kecamatan_name" value="{{ $compign->company_area_district }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Village</label>
+                                    <select name="company_area_village" id="desaId" class="form-select select2">
+                                        <option value="">Select Village</option>
+                                    </select>
+                                    <input type="hidden" name="company_area_village_name" id="desa_name" value="{{ $compign->company_area_village }}">
+                                </div>
+                            </div>
+                            
+                            <!-- PIC -->
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Person In Charge (PIC)</label>
+                                    <select name="pic_employee_id" class="form-select select2">
+                                        <option value="">Select Employee</option>
+                                        @foreach($employees as $employee)
+                                            <option value="{{ $employee->id }}" {{ old('pic_employee_id', $compign->pic_employee_id) == $employee->id ? 'selected' : '' }}>{{ $employee->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label">Description</label>
@@ -95,7 +149,6 @@
                                     <textarea class="form-control" name="notes" rows="2">{{old('notes', $compign->notes)}}</textarea>
                                 </div>
                             </div>
-                        </div>
                     </div>
                     <div class="card-footer text-end">
                         <a href="{{route('ref-compign.index')}}" class="btn btn-light me-2">Cancel</a>
@@ -112,3 +165,122 @@
     </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Currency Formatter for "2,000,000" style
+        $(document).on('input', '.currency-format', function(){
+             let val = $(this).val().replace(/[^0-9]/g, '');
+             if(val) {
+                 $(this).val(new Intl.NumberFormat('en-US').format(val));
+             } else {
+                 $(this).val('');
+             }
+        });
+
+        $('.select2').select2({
+            theme: 'bootstrap-5'
+        });
+
+        // Pre-defined values
+        const initialProvinceName = "{{ $compign->company_area_province }}";
+        const initialRegencyName = "{{ $compign->company_area_regency }}";
+        const initialDistrictName = "{{ $compign->company_area_district }}";
+        const initialVillageName = "{{ $compign->company_area_village }}";
+
+        let selectedProvinceId = null;
+        let selectedRegencyId = null;
+        let selectedDistrictId = null;
+
+        // Load Provinces
+        $.get("{{ route('api.provinces') }}", function(data) {
+            let options = '<option value="">Select Province</option>';
+            data.forEach(p => {
+                const selected = p.name === initialProvinceName ? 'selected' : '';
+                if(selected) selectedProvinceId = p.id;
+                options += `<option value="${p.name}" data-id="${p.id}" ${selected}>${p.name}</option>`;
+            });
+            $('#provinsiId').html(options);
+
+            // Trigger cascades if value exists
+            if (selectedProvinceId) {
+                loadRegencies(selectedProvinceId, initialRegencyName);
+            }
+        });
+
+        function loadRegencies(provinceId, selectedName = null) {
+             $.get(`/api/provinces/${provinceId}/regencies`, function(data) {
+                let options = '<option value="">Select Regency</option>';
+                data.forEach(r => {
+                    const selected = r.name === selectedName ? 'selected' : '';
+                    if(selected) selectedRegencyId = r.id;
+                    options += `<option value="${r.name}" data-id="${r.id}" ${selected}>${r.name}</option>`;
+                });
+                $('#kabupatenId').html(options);
+
+                if (selectedRegencyId && initialDistrictName) {
+                    loadDistricts(selectedRegencyId, initialDistrictName);
+                }
+            });
+        }
+
+        function loadDistricts(regencyId, selectedName = null) {
+            $.get(`/api/regencies/${regencyId}/districts`, function(data) {
+                let options = '<option value="">Select District</option>';
+                data.forEach(d => {
+                    const selected = d.name === selectedName ? 'selected' : '';
+                    if(selected) selectedDistrictId = d.id;
+                    options += `<option value="${d.name}" data-id="${d.id}" ${selected}>${d.name}</option>`;
+                });
+                $('#kecamatanId').html(options);
+
+                if (selectedDistrictId && initialVillageName) {
+                    loadVillages(selectedDistrictId, initialVillageName);
+                }
+            });
+        }
+
+        function loadVillages(districtId, selectedName = null) {
+            $.get(`/api/districts/${districtId}/villages`, function(data) {
+                let options = '<option value="">Select Village</option>';
+                data.forEach(v => {
+                    const selected = v.name === selectedName ? 'selected' : '';
+                    options += `<option value="${v.name}" data-id="${v.id}" ${selected}>${v.name}</option>`;
+                });
+                $('#desaId').html(options);
+            });
+        }
+
+        // Change Handlers
+        $('#provinsiId').change(function() {
+            const id = $(this).find(':selected').data('id');
+            $('#kabupatenId').html('<option>Loading...</option>');
+            $('#kecamatanId, #desaId').html('<option value="">Select</option>');
+            
+            if(id) {
+                loadRegencies(id);
+            }
+        });
+
+        $('#kabupatenId').change(function() {
+            const id = $(this).find(':selected').data('id');
+            $('#kecamatanId').html('<option>Loading...</option>');
+            $('#desaId').html('<option value="">Select</option>');
+            
+            if(id) {
+                loadDistricts(id);
+            }
+        });
+
+        $('#kecamatanId').change(function() {
+            const id = $(this).find(':selected').data('id');
+            $('#desaId').html('<option>Loading...</option>');
+            
+            if(id) {
+                 loadVillages(id);
+            }
+        });
+    });
+</script>
+@endpush

@@ -26,5 +26,15 @@ class RefCompign extends Model
         'roi',
         'notes',
         'status',
+        'company_area_province',
+        'company_area_regency',
+        'company_area_district',
+        'company_area_village',
+        'pic_employee_id',
     ];
+
+    public function picEmployee()
+    {
+        return $this->belongsTo(Employee::class, 'pic_employee_id');
+    }
 }

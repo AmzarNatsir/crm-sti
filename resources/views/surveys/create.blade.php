@@ -66,8 +66,8 @@
                                     <input type="date" name="tglLahir" class="form-control" placeholder="Tanggal Lahir">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Jabatan <span class="text-danger">*</span></label>
-                                    <input type="text" name="jabatan" class="form-control" required placeholder="Jabatan">
+                                    <label class="form-label">Pekerjaan <span class="text-danger">*</span></label>
+                                    <input type="text" name="jabatan" class="form-control" required placeholder="Pekerjaan">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Nomor WhatsApp <span class="text-danger">*</span></label>

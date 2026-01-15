@@ -134,7 +134,7 @@
                 removeMaskOnSubmit: false,
                 rightAlign: false,
                 allowMinus: false
-            }).mask(document.querySelectorAll("input[name='price'], input[name='price_cs'], input[name='price_r1'], input[name='price_r2']"));
+            }).mask(document.querySelectorAll("input[name='price'], input[name='price_cs'], input[name='price_r1'], input[name='price_r2'], input[name='price_fg']"));
 
             Inputmask({
                 alias: "numeric",

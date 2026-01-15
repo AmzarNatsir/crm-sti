@@ -114,7 +114,8 @@
                                                             <option value="{{$product->id}}" 
                                                                 data-price-cs="{{ isset($prices['CS']) ? (int)$prices['CS'] : 0 }}"
                                                                 data-price-r1="{{ isset($prices['R1']) ? (int)$prices['R1'] : 0 }}"
-                                                                data-price-r2="{{ isset($prices['R2']) ? (int)$prices['R2'] : 0 }}">
+                                                                data-price-r2="{{ isset($prices['R2']) ? (int)$prices['R2'] : 0 }}" 
+                                                                data-price-fg="{{ isset($prices['FG']) ? (int)$prices['FG'] : 0 }}">
                                                                 {{$product->name}}
                                                             </option>
                                                         @endforeach
@@ -125,6 +126,7 @@
                                                         <option value="CS">CS</option>
                                                         <option value="R1">R1</option>
                                                         <option value="R2">R2</option>
+                                                        <option value="FG">FG</option>
                                                     </select>
                                                 </td>
                                                 <td><input type="text" class="form-control price-input" name="items[0][price]" readonly required></td>

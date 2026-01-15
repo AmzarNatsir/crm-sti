@@ -43,7 +43,7 @@ class ProductController extends Controller
         }
 
         // Handle Price types
-        foreach (['price_cs', 'price_r1', 'price_r2'] as $pType) {
+        foreach (['price_cs', 'price_r1', 'price_r2', 'price_fg'] as $pType) {
             if ($request->has($pType)) {
                 $request->merge([$pType => str_replace(['.', ','], ['', '.'], $request->$pType)]);
             }
@@ -72,7 +72,7 @@ class ProductController extends Controller
         $product = Product::create($data);
 
         // Save price types
-        foreach (['CS' => 'price_cs', 'R1' => 'price_r1', 'R2' => 'price_r2'] as $type => $field) {
+        foreach (['CS' => 'price_cs', 'R1' => 'price_r1', 'R2' => 'price_r2', 'FG' => 'price_fg'] as $type => $field) {
             if ($request->filled($field)) {
                 $product->prices()->create([
                     'type' => $type,
@@ -102,6 +102,7 @@ class ProductController extends Controller
         $product->price_cs = $prices['CS'] ?? null;
         $product->price_r1 = $prices['R1'] ?? null;
         $product->price_r2 = $prices['R2'] ?? null;
+        $product->price_fg = $prices['FG'] ?? null;
 
         return view('products.edit', compact('product', 'types', 'merks'));
     }
@@ -120,7 +121,7 @@ class ProductController extends Controller
         }
 
         // Handle Price types
-        foreach (['price_cs', 'price_r1', 'price_r2'] as $pType) {
+        foreach (['price_cs', 'price_r1', 'price_r2', 'price_fg'] as $pType) {
             if ($request->has($pType)) {
                 $request->merge([$pType => str_replace(['.', ','], ['', '.'], $request->$pType)]);
             }
@@ -155,7 +156,7 @@ class ProductController extends Controller
             $product->update($data);
 
             // Update price types
-            foreach (['CS' => 'price_cs', 'R1' => 'price_r1', 'R2' => 'price_r2'] as $type => $field) {
+            foreach (['CS' => 'price_cs', 'R1' => 'price_r1', 'R2' => 'price_r2', 'FG' => 'price_fg'] as $type => $field) {
                 if ($request->filled($field)) {
                     $product->prices()->updateOrCreate(
                         ['type' => $type],
@@ -212,7 +213,8 @@ class ProductController extends Controller
                 $prices = $product->prices->pluck('price', 'type')->toArray();
                 $price_display = "CS: " . number_format($prices['CS'] ?? 0) . 
                                 " | R1: " . number_format($prices['R1'] ?? 0) . 
-                                " | R2: " . number_format($prices['R2'] ?? 0);
+                                " | R2: " . number_format($prices['R2'] ?? 0) .
+                                " | FG: " . number_format($prices['FG'] ?? 0);
 
                 return [
                     'id' => $product->id,

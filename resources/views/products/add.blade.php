@@ -73,6 +73,12 @@
                     <input type="text" class="form-control" name="price_r2" required>
                 </div>
             </div>
+             <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Price Farmer Group <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="price_fg" required>
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label">Margin</label>

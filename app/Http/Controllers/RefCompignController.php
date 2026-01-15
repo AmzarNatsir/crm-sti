@@ -54,7 +54,9 @@ class RefCompignController extends Controller
      */
     public function create()
     {
-        return view('ref_compign.create');
+        $employees = \App\Models\Employee::all();
+        $users = \App\Models\User::all();
+        return view('ref_compign.create', compact('employees', 'users'));
     }
 
     /**
@@ -62,6 +64,12 @@ class RefCompignController extends Controller
      */
     public function store(Request $request)
     {
+        // Sanitize currency inputs (remove commas)
+        $request->merge([
+            'target_revenue' => $request->target_revenue ? str_replace(',', '', $request->target_revenue) : null,
+            'badget' => $request->badget ? str_replace(',', '', $request->badget) : null,
+        ]);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -69,6 +77,11 @@ class RefCompignController extends Controller
             'target_sales' => 'nullable|integer',
             'target_revenue' => 'nullable|numeric',
             'badget' => 'nullable|numeric',
+            'company_area_province' => 'nullable|string',
+            'company_area_regency' => 'nullable|string',
+            'company_area_district' => 'nullable|string',
+            'company_area_village' => 'nullable|string',
+            'pic_employee_id' => 'nullable|exists:employees,id',
         ]);
 
         $data = $request->all();
@@ -85,7 +98,9 @@ class RefCompignController extends Controller
     public function edit($id)
     {
         $compign = RefCompign::findOrFail($id);
-        return view('ref_compign.edit', compact('compign'));
+        $employees = \App\Models\Employee::all();
+        $users = \App\Models\User::all();
+        return view('ref_compign.edit', compact('compign', 'employees', 'users'));
     }
 
     /**
@@ -93,6 +108,12 @@ class RefCompignController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Sanitize currency inputs (remove commas)
+        $request->merge([
+            'target_revenue' => $request->target_revenue ? str_replace(',', '', $request->target_revenue) : null,
+            'badget' => $request->badget ? str_replace(',', '', $request->badget) : null,
+        ]);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -100,6 +121,11 @@ class RefCompignController extends Controller
             'target_sales' => 'nullable|integer',
             'target_revenue' => 'nullable|numeric',
             'badget' => 'nullable|numeric',
+            'company_area_province' => 'nullable|string',
+            'company_area_regency' => 'nullable|string',
+            'company_area_district' => 'nullable|string',
+            'company_area_village' => 'nullable|string',
+            'pic_employee_id' => 'nullable|exists:employees,id',
         ]);
 
         $compign = RefCompign::findOrFail($id);
