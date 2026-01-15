@@ -135,6 +135,8 @@ Route::middleware('auth')->group(function () {
     ->name('crm-dashboard');
     Route::get('employees-dashboard', [\App\Http\Controllers\EmployeeDashboardController::class, 'index'])
     ->name('employees-dashboard');
+    Route::get('customer-loyalty-dashboard', [\App\Http\Controllers\CustomerLoyaltyController::class, 'index'])
+    ->name('dashboard.loyalty');
     // Reminder Routes
     Route::get('reminders', [\App\Http\Controllers\ReminderController::class, 'index'])->name('reminders.index');
     Route::get('reminders/last-order/{id}', [\App\Http\Controllers\ReminderController::class, 'getLastOrder'])->name('reminders.last-order');

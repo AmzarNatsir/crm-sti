@@ -72,6 +72,7 @@
                                     <li><a href="{{url('sales-dashboard')}}" class="{{ Request::is('sales-dashboard') ? 'active' : '' }}">Sales</a></li>
                                     <li><a href="{{url('employees-dashboard')}}" class="{{ Request::is('employees-dashboard') ? 'active' : '' }}">Employee Analysis</a></li>
                                     <li><a href="{{url('crm-dashboard')}}" class="{{ Request::is('crm-dashboard') ? 'active' : '' }}">CRM Analysis</a></li>
+                                    <li><a href="{{url('customer-loyalty-dashboard')}}" class="{{ Request::is('customer-loyalty-dashboard') ? 'active' : '' }}">Customer Loyalty</a></li>
                                 </ul>
                             </li>
                         </ul>
