@@ -57,6 +57,19 @@
             </div>
         </div>
 
+            <!-- Education Distribution (Pie) -->
+            <div class="col-xl-6 d-flex">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Education Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="education-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <!-- Length of Service (Bar Horizontal) -->
             <div class="col-xl-12 d-flex">
@@ -128,7 +141,30 @@
         };
         new ApexCharts(document.querySelector("#gender-chart"), genderOptions).render();
 
-        // 3. Length of Service Chart
+        // 3. Education Distribution Chart
+        var educationOptions = {
+            series: [
+                @foreach($educationDistribution as $count)
+                    {{ $count }},
+                @endforeach
+            ],
+            labels: [
+                @foreach(array_keys($educationDistribution) as $label)
+                    '{{ $label }}',
+                @endforeach
+            ],
+            chart: {
+                type: 'pie',
+                height: 350
+            },
+            legend: {
+                position: 'bottom'
+            },
+            colors: ['#FEB019', '#00E396', '#775DD0', '#FF4560', '#008FFB']
+        };
+        new ApexCharts(document.querySelector("#education-chart"), educationOptions).render();
+
+        // 4. Length of Service Chart
         var serviceOptions = {
             series: [{
                 name: 'Employees',

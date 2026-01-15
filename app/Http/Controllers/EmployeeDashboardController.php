@@ -38,11 +38,20 @@ class EmployeeDashboardController extends Controller
             '10+ Years' => Employee::whereRaw('TIMESTAMPDIFF(YEAR, join_date, CURDATE()) >= 10')->count(),
         ];
 
+        // Education Distribution
+        $educationDistribution = Employee::select('last_education', DB::raw('count(*) as count'))
+            ->groupBy('last_education')
+            ->whereNotNull('last_education')
+            ->get()
+            ->pluck('count', 'last_education')
+            ->toArray();
+
         return view('employees.dashboard', compact(
             'totalEmployees',
             'ageDistribution',
             'genderDistribution',
-            'serviceLength'
+            'serviceLength',
+            'educationDistribution'
         ));
     }
 }

@@ -41,6 +41,7 @@ $(document).ready(function () {
                 { data: 'employee_number', name: 'employee_number' },
                 { data: 'identitiy_number', name: 'identitiy_number' },
                 { data: 'name', name: 'name' },
+                { data: 'last_education', name: 'last_education' },
                 { data: 'position_name', name: 'position.name' },
                 { data: 'email', name: 'email' },
                 { data: 'phone', name: 'phone' },

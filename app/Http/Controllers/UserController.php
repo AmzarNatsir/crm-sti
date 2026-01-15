@@ -83,14 +83,28 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         try {
-            $request->validate([
-                'employee_id' => 'required|exists:employees,id|unique:users,employee_id,'.$id,
+            $rules = [
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email,'.$id,
                 'password' => ['nullable', 'string', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()->uncompromised()],
                 'roles' => 'required|array|min:1',
                 'roles.*' => 'exists:roles,name',
-            ]);
+            ];
+
+            // Conditional validation for employee_id
+            if ($request->employee_id != $user->employee_id) {
+                 $rules['employee_id'] = 'required|exists:employees,id|unique:users,employee_id';
+            } else {
+                 $rules['employee_id'] = 'required|exists:employees,id';
+            }
+
+            // Conditional validation for email
+            if ($request->email != $user->email) {
+                 $rules['email'] = 'required|string|email|max:255|unique:users,email';
+            } else {
+                 $rules['email'] = 'required|string|email|max:255';
+            }
+
+            $request->validate($rules);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput()->with('error_in_form', 'edit')->with('edit_user_id', $id);
         }

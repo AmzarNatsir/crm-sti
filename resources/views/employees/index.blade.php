@@ -52,6 +52,7 @@
                             <th>Employee No</th>
                             <th>Identity No</th>
                             <th>Name</th>
+                            <th>Last Education</th>
                             <th>Position</th>
                             <th>Email</th>
                             <th>Phone</th>
