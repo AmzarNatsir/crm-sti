@@ -139,7 +139,7 @@
                         </ul>
                     </li>
                     @endcanany
-                    @canany(["telemarketing_create", "telemarketing_view"])
+                    @canany(["telemarketing_create", "telemarketing_view", 'telemarketing_admin'])
                     <li class="menu-title"><span>TELEMARKETING</span></li>
                     <li>
                         <ul>
