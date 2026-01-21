@@ -18,6 +18,7 @@ class Order extends Model
         'compaign_id',
         'payment_status',
         'invoice_discount', 
+        'shipping_cost',
         'delivery_status',
     ];
 

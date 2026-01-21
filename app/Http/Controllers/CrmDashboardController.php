@@ -18,7 +18,7 @@ class CrmDashboardController extends Controller
         $totalCustomers = Customer::where('type', 'customer')->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)->count();
 
         // Avg CLTV (Customer Lifetime Value) = Total Revenue / Total Customers
-        $totalRevenue = Order::sum('total_amount');
+        $totalRevenue = Order::where('delivery_status', 'completed')->sum('total_amount');
         $avgCLTV = $totalCustomers > 0 ? $totalRevenue / $totalCustomers : 0;
         
         // Avg ARPU (Average Revenue Per User - per month)
@@ -28,7 +28,8 @@ class CrmDashboardController extends Controller
         for ($i = 0; $i <= 12; $i++) {
             $month = Carbon::now()->subMonths($i);
 
-            $orders = Order::whereMonth('created_at', $month->month)
+            $orders = Order::where('delivery_status', 'completed')
+                        ->whereMonth('created_at', $month->month)
                         ->whereYear('created_at', $month->year);
 
             $revenue = $orders->sum('total_amount');
@@ -48,7 +49,8 @@ class CrmDashboardController extends Controller
 
         // Avg Churn Rate (Mockup logic: customers who haven't ordered in last 90 days vs total)
         $ninetyDaysAgo = Carbon::now()->subDays(90);
-        $activeIn90Days = Order::where('created_at', '>=', $ninetyDaysAgo)->distinct('customer_id')->count();
+        $activeIn90Days = Order::where('delivery_status', 'completed')
+                        ->where('created_at', '>=', $ninetyDaysAgo)->distinct('customer_id')->count();
         $churnedCount = max(0, $totalCustomers - $activeIn90Days);
         $churnRate = $totalCustomers > 0 ? ($churnedCount / $totalCustomers) * 100 : 0;
 
@@ -58,11 +60,13 @@ class CrmDashboardController extends Controller
         // 3. Commodity Distribution
         $commodityDistribution = Customer::join('ref_commodity', 'customers.commodity_id', '=', 'ref_commodity.id')
             ->select('ref_commodity.name', DB::raw('count(customers.id) as count'))
+            ->where('customers.type', 'customer')
             ->groupBy('ref_commodity.name')
             ->get();
 
         // 4. Customer Area Mapping - Top 5 by Regency (District in our model)
         $topRegencies = Customer::select('district as name', DB::raw('count(id) as count'))
+            ->where('type', 'customer')
             ->whereNotNull('district')
             ->groupBy('district')
             ->orderByDesc('count')
@@ -71,6 +75,7 @@ class CrmDashboardController extends Controller
 
         // 5. Customer Area Mapping - Top 5 by Province
         $topProvinces = Customer::select('province as name', DB::raw('count(id) as count'))
+            ->where('type', 'customer')
             ->whereNotNull('province')
             ->groupBy('province')
             ->orderByDesc('count')

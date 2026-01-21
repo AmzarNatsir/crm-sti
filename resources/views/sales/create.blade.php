@@ -151,6 +151,10 @@
                                         <h6 class="fs-14 fw-normal text-dark">Discount</h6>
                                         <input type="text" class="form-control form-control-sm w-50" name="invoice_discount" id="invoice-discount" value="0">
                                     </div>
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <h6 class="fs-14 fw-normal text-dark">Shipping Cost (Rp)</h6>
+                                        <input type="text" class="form-control form-control-sm w-50" name="shipping_cost" id="shipping-cost" value="0">
+                                    </div>
                                     <div class="d-flex align-items-center justify-content-between mb-2 border-top pt-2">
                                         <h6 class="fs-18 fw-bold">Total</h6>
                                         <h6 class="fs-18 fw-bold" id="grand-total">0</h6>
@@ -191,7 +195,7 @@
                 removeMaskOnSubmit: false,
                 rightAlign: false,
                 allowMinus: false
-            }).mask(document.querySelectorAll(".price-input, #invoice-discount"));
+            }).mask(document.querySelectorAll(".price-input, #invoice-discount, #shipping-cost"));
         }
     }
     $(document).ready(function() {
@@ -230,7 +234,8 @@
             });
 
             let discount = getNumericValue($('#invoice-discount').val());
-            let grandTotal = grandSubtotal - discount;
+            let shippingCost = getNumericValue($('#shipping-cost').val());
+            let grandTotal = grandSubtotal - discount + shippingCost;
 
             $('#grand-subtotal').text(grandSubtotal.toLocaleString('id-ID', {minimumFractionDigits: 0}));
             $('#grand-total').text(grandTotal.toLocaleString('id-ID', {minimumFractionDigits: 0}));
@@ -322,7 +327,7 @@
             calculateRow($(this).closest('tr'));
         });
 
-        $(document).on('input', '#invoice-discount', function() {
+        $(document).on('input', '#invoice-discount, #shipping-cost', function() {
             calculateGrandTotal();
         });
     });

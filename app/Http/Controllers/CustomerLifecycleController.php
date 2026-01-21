@@ -13,7 +13,9 @@ class CustomerLifecycleController extends Controller
     public function index()
     {
         $now = Carbon::now();
-        $customers = Customer::where('type', 'customer')->with(['orders'])->get();
+        $customers = Customer::where('type', 'customer')->with(['orders' => function($query) {
+            $query->where('delivery_status', 'completed');
+        }])->get();
         
         // Initialize segment data
         $segments = [
@@ -106,7 +108,7 @@ class CustomerLifecycleController extends Controller
         // Calculate KPIs
         $churnRate = $totalCustomers > 0 ? round(($churnedCustomers / $totalCustomers) * 100, 1) : 0;
         $avgClv = $totalCustomers > 0 ? $totalRevenue / $totalCustomers : 0;
-        $avgFrequency = $totalCustomers > 0 ? Order::count() / $totalCustomers : 0;
+        $avgFrequency = $totalCustomers > 0 ? Order::where('delivery_status', 'completed')->count() / $totalCustomers : 0;
 
         // Generate insights
         $insights = $this->generateInsights($segmentMetrics, $totalCustomers);

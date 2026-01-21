@@ -51,6 +51,11 @@ class SalesController extends Controller
             $request->merge(['invoice_discount' => $val !== '' ? $val : 0]);
         }
 
+        if ($request->has('shipping_cost')) {
+            $val = str_replace(['.', ','], ['', '.'], $request->shipping_cost);
+            $request->merge(['shipping_cost' => $val !== '' ? $val : 0]);
+        }
+
         $request->validate([
             'customer_id' => 'required',
             'invoice_no' => 'required|string|max:50',
@@ -76,6 +81,7 @@ class SalesController extends Controller
                 'payment_status' => $request->payment_status ?? 'paid',
                 'compaign_id' => $request->compaign_id,
                 'invoice_discount' => $request->invoice_discount ?? 0,
+                'shipping_cost' => $request->shipping_cost ?? 0,
             ]);
 
             foreach ($request->items as $item) {

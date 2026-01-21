@@ -18,8 +18,8 @@ class CustomerDashboardController extends Controller
     {
         // 1. KPI Stats
         $totalCustomers = Customer::where('type', 'customer')->count();
-        $totalOrders = Order::count();
-        $totalRevenue = Order::sum('total_amount');
+        $totalOrders = Order::where('delivery_status', 'completed')->count();
+        $totalRevenue = Order::where('delivery_status', 'completed')->sum('total_amount');
         $averageOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
 
         // New Customers (Current Month)
@@ -62,11 +62,13 @@ class CustomerDashboardController extends Controller
         // 4. Payment Method Breakdown
         $paymentMethods = Order::join('common_payment_method', 'orders.payment_method_id', '=', 'common_payment_method.id')
             ->select('common_payment_method.name', DB::raw('COUNT(orders.id) as count'))
+            ->where('orders.delivery_status', 'completed')
             ->groupBy('common_payment_method.name')
             ->get();
 
         // 5. Shopping Time (Hourly)
         $hourlyStats = Order::select(DB::raw('HOUR(created_at) as hour'), DB::raw('COUNT(id) as count'))
+            ->where('delivery_status', 'completed')
             ->groupBy('hour')
             ->orderBy('hour')
             ->get()
@@ -80,6 +82,7 @@ class CustomerDashboardController extends Controller
 
         // 6. Top Customers (Highest Spend)
         $topCustomers = Order::select('customer_id', DB::raw('SUM(total_amount) as total_spend'))
+            ->where('delivery_status', 'completed')
             ->with('customer')
             ->groupBy('customer_id')
             ->orderByDesc('total_spend')
@@ -92,6 +95,7 @@ class CustomerDashboardController extends Controller
                 DB::raw('COUNT(id) as order_count'),
                 DB::raw('COUNT(DISTINCT customer_id) as customer_count')
             )
+            ->where('delivery_status', 'completed')
             ->whereYear('created_at', date('Y'))
             ->groupBy('month')
             ->orderBy('month')

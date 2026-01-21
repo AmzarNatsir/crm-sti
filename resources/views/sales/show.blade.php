@@ -77,11 +77,15 @@
                                 <div class="col-lg-5">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <h6 class="fs-14 fw-medium text-body">Subtotal</h6>
-                                        <h6 class="fs-14 fw-semibold text-dark">{{ number_format($order->total_amount + $order->invoice_discount, 2) }}</h6>
+                                        <h6 class="fs-14 fw-semibold text-dark">{{ number_format($order->total_amount + $order->invoice_discount - ($order->shipping_cost ?? 0), 2) }}</h6>
                                     </div>
-                                    <div class="d-flex align-items-center justify-content-between mb-2 border-bottom pb-2">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
                                         <h6 class="fs-14 fw-medium text-body">Discount</h6>
                                         <h6 class="fs-14 fw-semibold text-danger">-{{ number_format($order->invoice_discount, 2) }}</h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between mb-2 border-bottom pb-2">
+                                        <h6 class="fs-14 fw-medium text-body">Shipping Cost</h6>
+                                        <h6 class="fs-14 fw-semibold text-success">+{{ number_format($order->shipping_cost ?? 0, 2) }}</h6>
                                     </div>
                                     <div class="d-flex align-items-center justify-content-between">
                                         <h6 class="fs-18 fw-bold">Total</h6>
