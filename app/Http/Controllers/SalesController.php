@@ -158,7 +158,7 @@ class SalesController extends Controller
                     'delivery_status' => $order->delivery_status ?? 'open',
                     'action' => '<div class="d-flex align-items-center gap-1">
                                     <a href="' . route('sales.show', $order->id) . '" class="btn btn-sm btn-info" title="View"><i class="ti ti-eye"></i></a>' . 
-                                    (($order->delivery_status === 'completed' && auth()->user()->can('approval_center_cancel_invoice')) ? 
+                                    (($order->delivery_status === 'completed' && auth()->user()->can('approval_center_view')) ? 
                                     '<button onclick="cancelInvoice(' . $order->id . ')" class="btn btn-sm btn-danger" title="Cancel Invoice"><i class="ti ti-x"></i></button>' : '') . 
                                  '</div>'
                 ];
@@ -174,7 +174,7 @@ class SalesController extends Controller
 
     public function cancel($id)
     {
-        if (!auth()->user()->can('approval_center_cancel_invoice')) {
+        if (!auth()->user()->can('approval_center_view')) {
             return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 403);
         }
 
