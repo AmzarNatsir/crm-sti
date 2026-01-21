@@ -122,6 +122,8 @@ Route::middleware('auth')->group(function () {
     // Sales/Orders Routes
     Route::get('sales/datatables', [\App\Http\Controllers\SalesController::class, 'datatables'])
     ->name('sales.datatables');
+    Route::post('sales/{id}/cancel', [\App\Http\Controllers\SalesController::class, 'cancel'])
+    ->name('sales.cancel');
     Route::resource('sales', \App\Http\Controllers\SalesController::class);
     Route::get('customers-dashboard', [\App\Http\Controllers\CustomerDashboardController::class, 'index'])
     ->name('customers-dashboard');

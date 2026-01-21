@@ -105,20 +105,23 @@ class CustomerLoyaltyController extends Controller
 
             // 6. Classification
             if ($loyalty_score >= 85) {
-                $category = 'Very Loyal';
-                $action = 'Berikan Reward Eksklusif / Program VIP';
+                $category = 'Champions';
+                $action = 'Tinggi R, F, M';
             } elseif ($loyalty_score >= 70) {
                 $category = 'Loyal';
-                $action = 'Upselling / Cross-selling produk premium';
+                $action = 'Tinggi R dan F';
             } elseif ($loyalty_score >= 50) {
-                $category = 'Moderate';
-                $action = 'Tawarkan Promo/Diskon untuk meningkatkan frekuensi';
+                $category = 'Big Spender';
+                $action = 'Tinggi R dan M';
             } elseif ($loyalty_score >= 30) {
-                $category = 'Churn Risk';
-                $action = 'Hubungi Personal / Survey Kepuasan';
+                $category = 'Potential Loyal';
+                $action = 'Tinggi F dan M';
+             } elseif ($loyalty_score >= 15) {
+                $category = 'Promising';
+                $action = 'Tinggi R saja';
             } else {
-                $category = 'Almost Lost';
-                $action = 'Win-back Campaign / Promo Agresif';
+                $category = 'At Risk';
+                $action = 'Rendah di semua dimensi';
             }
 
             $results[] = (object) [

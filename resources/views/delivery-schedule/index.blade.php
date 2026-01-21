@@ -137,6 +137,10 @@
                     <div id="completionNotice" class="alert alert-success d-none">
                         Delivery completed on <span id="completedOnDate"></span>
                     </div>
+
+                    <div id="rejectionNotice" class="alert alert-danger d-none">
+                        This delivery schedule was rejected.
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger me-auto" id="deleteScheduleBtn">Delete</button>
@@ -238,6 +242,7 @@
                 $('#updateBtn').removeClass('d-none').text('Update Schedule');
                 $('#deleteScheduleBtn').removeClass('d-none');
                 $('#completionNotice').addClass('d-none');
+                $('#rejectionNotice').addClass('d-none');
 
                 if (status === 'completed') {
                     // Lock fields for completed
@@ -259,6 +264,14 @@
                     $('#updateBtn').text('Complete Delivery');
                     // Hide delete button or keep it? Requirements say "cannot be changed", probably implies cannot be deleted either.
                     $('#deleteScheduleBtn').addClass('d-none');
+                } else if (status === 'rejected') {
+                    // Rejected: Fully Lock
+                    $('#editDeliveryDateInput').prop('disabled', true);
+                    $('#editPersonnelSelect').prop('disabled', true);
+                    
+                    $('#updateBtn').addClass('d-none');
+                    $('#deleteScheduleBtn').addClass('d-none');
+                    $('#rejectionNotice').removeClass('d-none');
                 } else {
                     // Submitted/Open: All Editable
                     // Everything is already reset to editable above

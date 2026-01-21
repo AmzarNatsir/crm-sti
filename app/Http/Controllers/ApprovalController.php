@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Approval;
 use App\Models\Activity;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -57,7 +58,7 @@ class ApprovalController extends Controller
             })
             ->addColumn('action', function ($approval) {
                 $btn = '<button onclick="approve(' . $approval->id . ')" class="btn btn-success btn-sm me-1" title="Approve"><i class="ti ti-check"></i></button>';
-                // $btn .= '<button onclick="reject(' . $approval->id . ')" class="btn btn-danger btn-sm" title="Reject"><i class="ti ti-x"></i></button>';
+                $btn .= '<button onclick="reject(' . $approval->id . ')" class="btn btn-danger btn-sm" title="Reject"><i class="ti ti-x"></i></button>';
                 return $btn;
             })
             ->rawColumns(['action', 'details'])
@@ -108,7 +109,14 @@ class ApprovalController extends Controller
 
                  if ($approval->approvable_type === 'App\Models\DeliverySchedule') {
                      $schedule = $approval->approvable;
-                     // Keep as submitted but log rejection
+                     // Update status to rejected
+                     $schedule->update(['status' => 'rejected']);
+                     
+                     // Update order delivery status
+                     if ($schedule->order) {
+                         $schedule->order->update(['delivery_status' => 'rejected']);
+                     }
+                     
                      Activity::create([
                         'customer_id' => $schedule->order->customer_id,
                         'user_id' => auth()->id(),

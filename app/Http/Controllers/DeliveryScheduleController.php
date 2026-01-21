@@ -30,6 +30,8 @@ class DeliveryScheduleController extends Controller
                     $color = '#ef4444'; // Red
                 } elseif ($schedule->status === 'completed') {
                     $color = '#10b981'; // Green
+                } elseif ($schedule->status === 'rejected') {
+                    $color = '#6b7280'; // Gray
                 }
 
                 $editable = $schedule->status === 'submitted'; // Only editable if submitted

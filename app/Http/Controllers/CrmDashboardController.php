@@ -23,10 +23,28 @@ class CrmDashboardController extends Controller
         
         // Avg ARPU (Average Revenue Per User - per month)
         // For simplicity, let's take revenue for the current month / customers who ordered this month
-        $currentMonthOrders = Order::whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year);
-        $currentMonthRevenue = $currentMonthOrders->sum('total_amount');
-        $currentMonthActiveCustomers = $currentMonthOrders->distinct('customer_id')->count();
-        $avgARPU = $currentMonthActiveCustomers > 0 ? $currentMonthRevenue / $currentMonthActiveCustomers : 0;
+        $arpuPerMonth = [];
+
+        for ($i = 0; $i <= 12; $i++) {
+            $month = Carbon::now()->subMonths($i);
+
+            $orders = Order::whereMonth('created_at', $month->month)
+                        ->whereYear('created_at', $month->year);
+
+            $revenue = $orders->sum('total_amount');
+            $customers = $orders->distinct('customer_id')->count();
+
+            $arpuPerMonth[] = $customers > 0 ? $revenue / $customers : 0;
+        }
+        // Rata-rata ARPU
+        $avgARPU = count($arpuPerMonth) > 0 
+            ? array_sum($arpuPerMonth) / count($arpuPerMonth) 
+            : 0;
+
+        // $currentMonthOrders = Order::whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year);
+        // $currentMonthRevenue = $currentMonthOrders->sum('total_amount');
+        // $currentMonthActiveCustomers = $currentMonthOrders->distinct('customer_id')->count();
+        // $avgARPU = $currentMonthActiveCustomers > 0 ? $currentMonthRevenue / $currentMonthActiveCustomers : 0;
 
         // Avg Churn Rate (Mockup logic: customers who haven't ordered in last 90 days vs total)
         $ninetyDaysAgo = Carbon::now()->subDays(90);

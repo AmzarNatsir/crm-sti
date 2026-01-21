@@ -57,7 +57,7 @@
                             <span class="avatar avatar-md bg-transparent-info text-info border border-info">
                                 <i class="ti ti-receipt-2"></i>
                             </span>
-                            <span class="badge bg-info">Monthly</span>
+                            <span class="badge bg-info">Yearly</span>
                         </div>
                         <div>
                             <p class="mb-1 text-muted">Avg ARPU</p>

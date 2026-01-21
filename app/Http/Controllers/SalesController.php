@@ -156,7 +156,11 @@ class SalesController extends Controller
                     'total' => number_format($order->total_amount, 2),
                     'status' => $order->payment_status,
                     'delivery_status' => $order->delivery_status ?? 'open',
-                    'action' => '<a href="' . route('sales.show', $order->id) . '" class="btn btn-sm btn-info"><i class="ti ti-eye"></i></a>'
+                    'action' => '<div class="d-flex align-items-center gap-1">
+                                    <a href="' . route('sales.show', $order->id) . '" class="btn btn-sm btn-info" title="View"><i class="ti ti-eye"></i></a>' . 
+                                    (($order->delivery_status === 'completed' && auth()->user()->can('approval_center_cancel_invoice')) ? 
+                                    '<button onclick="cancelInvoice(' . $order->id . ')" class="btn btn-sm btn-danger" title="Cancel Invoice"><i class="ti ti-x"></i></button>' : '') . 
+                                 '</div>'
                 ];
             })
         ]);
@@ -166,5 +170,44 @@ class SalesController extends Controller
     {
         $order = Order::with(['customer', 'paymentMethod', 'items.product'])->findOrFail($id);
         return view('sales.show', compact('order'));
+    }
+
+    public function cancel($id)
+    {
+        if (!auth()->user()->can('approval_center_cancel_invoice')) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access.'], 403);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $order = Order::findOrFail($id);
+            
+            // Update order status
+            $order->update([
+                'delivery_status' => 'rejected',
+                // 'payment_status' => 'cancelled' // User didn't explicitly ask for this, keeping it focused on delivery_status
+            ]);
+
+            // Update associated delivery schedule if exists
+            $schedule = \App\Models\DeliverySchedule::where('order_id', $order->id)->first();
+            if ($schedule) {
+                $schedule->update(['status' => 'rejected']);
+            }
+
+            \App\Models\Activity::create([
+                'customer_id' => $order->customer_id,
+                'user_id' => auth()->id(),
+                'type' => 'sales_cancelled',
+                'status' => 'Rejected',
+                'notes' => "Invoice {$order->invoice_no} has been cancelled."
+            ]);
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Invoice cancelled successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
     }
 }

@@ -124,12 +124,45 @@
                     return `<span class="badge ${badgeClass}">${data.toUpperCase()}</span>`;
                 }},
                 { data: 'delivery_status', name: 'delivery_status', render: function(data) {
-                    let badgeClass = data === 'completed' ? 'bg-success' : 'bg-warning';
+                    let badgeClass = 'bg-warning';
+                    if (data === 'completed') badgeClass = 'bg-success';
+                    if (data === 'rejected') badgeClass = 'bg-danger';
                     return `<span class="badge ${badgeClass}">${data.toUpperCase()}</span>`;
                 }},
                 { data: 'action', name: 'action', orderable: false, searchable: false }
             ]
         });
+
+        window.cancelInvoice = function(id) {
+            Swal.fire({
+                title: 'Cancel Invoice?',
+                text: "This will set the delivery status to rejected!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/sales/${id}/cancel`,
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                Swal.fire('Cancelled!', res.message, 'success');
+                                table.ajax.reload();
+                            }
+                        },
+                        error: function(err) {
+                            Swal.fire('Error', err.responseJSON.message || 'Error occurred', 'error');
+                        }
+                    });
+                }
+            });
+        }
 
         $('#btn-filter').click(function() {
             table.ajax.reload();

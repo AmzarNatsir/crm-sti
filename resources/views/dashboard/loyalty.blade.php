@@ -19,10 +19,10 @@
         <!-- Metric Summary -->
         <div class="row">
             <div class="col-md-3">
-                <div class="card shadow-sm border-left-Success" style="cursor: pointer" onclick="filterCategory('Very Loyal')">
+                <div class="card shadow-sm border-left-Success" style="cursor: pointer" onclick="filterCategory('Champions')">
                     <div class="card-body">
-                        <h6 class="text-muted">Very Loyal (>85)</h6>
-                        <h3 class="fw-bold text-success">{{ collect($results)->where('category', 'Very Loyal')->count() }}</h3>
+                        <h6 class="text-muted">Champions (>85)</h6>
+                        <h3 class="fw-bold text-success">{{ collect($results)->where('category', 'Champions')->count() }}</h3>
                     </div>
                 </div>
             </div>
@@ -35,18 +35,26 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card shadow-sm border-left-warning" style="cursor: pointer" onclick="filterCategory('Churn Risk')">
+                <div class="card shadow-sm border-left-warning" style="cursor: pointer" onclick="filterCategory('Big Spender')">
                     <div class="card-body">
-                        <h6 class="text-muted">Churn Risk (30-49)</h6>
-                        <h3 class="fw-bold text-warning">{{ collect($results)->where('category', 'Churn Risk')->count() }}</h3>
+                        <h6 class="text-muted">Big Spender (30-49)</h6>
+                        <h3 class="fw-bold text-warning">{{ collect($results)->where('category', 'Big Spender')->count() }}</h3>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('Almost Lost')">
+                <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('At Risk')">
                     <div class="card-body">
-                        <h6 class="text-muted">Almost Lost (<30)</h6>
-                        <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'Almost Lost')->count() }}</h3>
+                        <h6 class="text-muted">At Risk (<30)</h6>
+                        <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'At Risk')->count() }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('At Risk')">
+                    <div class="card-body">
+                        <h6 class="text-muted">At Risk (<30)</h6>
+                        <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'At Risk')->count() }}</h3>
                     </div>
                 </div>
             </div>
@@ -96,16 +104,18 @@
                                 <td>{{ number_format($row->rfm_score_100, 1) }}</td>
                                 <td class="fw-bold">{{ number_format($row->loyalty_score, 1) }}</td>
                                 <td>
-                                    @if($row->category == 'Very Loyal')
-                                        <span class="badge bg-success">Very Loyal</span>
+                                    @if($row->category == 'Champions')
+                                        <span class="badge bg-success">Champions</span>
                                     @elseif($row->category == 'Loyal')
                                         <span class="badge bg-info">Loyal</span>
-                                    @elseif($row->category == 'Moderate')
-                                        <span class="badge bg-secondary">Moderate</span>
-                                    @elseif($row->category == 'Churn Risk')
-                                        <span class="badge bg-warning">Churn Risk</span>
+                                    @elseif($row->category == 'Big Spender')
+                                        <span class="badge bg-secondary">Big Spender</span>
+                                    @elseif($row->category == 'Potential Loyal')
+                                        <span class="badge bg-warning">Potential Loyal</span>
+                                    @elseif($row->category == 'Promising')
+                                        <span class="badge bg-warning">Promising</span>
                                     @else
-                                        <span class="badge bg-danger">Almost Lost</span>
+                                        <span class="badge bg-danger">At Risk</span>
                                     @endif
                                 </td>
                                 <td class="text-sm text-wrap" style="max-width: 250px;">

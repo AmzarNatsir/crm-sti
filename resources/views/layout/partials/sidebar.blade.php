@@ -185,9 +185,9 @@
                                 <a href="{{url('sales')}}"><i class="ti ti-list-check"></i><span>Sales</span></a>
                             </li>
                             @endcan
-                            @can("approval-center_view")
+                            @can("approval_center_view")
                             <li class="{{ Request::is('approvals*') ? 'active' : '' }}">
-                                <a href="{{ route('approvals.index') }}"><i class="ti ti-check-box"></i><span>Approval Center</span></a>
+                                <a href="{{ route('approvals.index') }}"><i class="ti ti-list-check"></i><span>Approval Center</span></a>
                             </li>
                             @endcan
                             @can("reminders_view")
