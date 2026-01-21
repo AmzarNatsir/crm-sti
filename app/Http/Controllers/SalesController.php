@@ -174,7 +174,7 @@ class SalesController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['customer', 'paymentMethod', 'items.product'])->findOrFail($id);
+        $order = Order::with(['customer', 'paymentMethod', 'items.product', 'deliverySchedule.personnel', 'deliverySchedule.expedition'])->findOrFail($id);
         return view('sales.show', compact('order'));
     }
 

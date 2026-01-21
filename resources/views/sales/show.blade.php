@@ -94,6 +94,47 @@
                                 </div>
                             </div>
 
+                            <!-- Delivery Schedule Information -->
+                            @if($order->deliverySchedule)
+                            <div class="row pb-3 mb-3 border-bottom">
+                                <div class="col-12">
+                                    <h6 class="mb-3 fs-16 fw-bold">Delivery Schedule Information</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p class="text-body mb-1">Delivery Date: <span class="text-dark fw-medium">{{ \Carbon\Carbon::parse($order->deliverySchedule->delivery_date)->format('d M Y') }}</span></p>
+                                            <p class="text-body mb-1">Status: 
+                                                <span class="badge 
+                                                    @if($order->deliverySchedule->status === 'submitted') bg-primary
+                                                    @elseif($order->deliverySchedule->status === 'approved') bg-warning
+                                                    @elseif($order->deliverySchedule->status === 'completed') bg-success
+                                                    @elseif($order->deliverySchedule->status === 'rejected') bg-danger
+                                                    @endif">
+                                                    {{ strtoupper($order->deliverySchedule->status) }}
+                                                </span>
+                                            </p>
+                                            @if($order->deliverySchedule->arrival_date)
+                                            <p class="text-body mb-1">Arrival Date: <span class="text-dark fw-medium">{{ \Carbon\Carbon::parse($order->deliverySchedule->arrival_date)->format('d M Y') }}</span></p>
+                                            @endif
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="text-body mb-1">Delivery Personnel: 
+                                                <span class="text-dark fw-medium">
+                                                    @if($order->deliverySchedule->personnel->count() > 0)
+                                                        {{ $order->deliverySchedule->personnel->pluck('name')->join(', ') }}
+                                                    @else
+                                                        {{ $order->deliverySchedule->employee->name ?? 'Not Assigned' }}
+                                                    @endif
+                                                </span>
+                                            </p>
+                                            @if($order->deliverySchedule->expedition)
+                                            <p class="text-body mb-1">Expedition: <span class="text-dark fw-medium">{{ $order->deliverySchedule->expedition->name }}</span></p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="text-center">
                                 <button type="button" class="btn btn-dark me-2" onclick="window.print()"> <i class="ti ti-printer me-1"></i> Print</button>
                                 <a href="{{ route('sales.index') }}" class="btn btn-primary">Back to List</a>

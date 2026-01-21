@@ -17,6 +17,7 @@ class DeliverySchedule extends Model
         'arrival_date',
         'user_id',
         'employee_id',
+        'expedition_id',
         'status'
     ];
 
@@ -50,5 +51,10 @@ class DeliverySchedule extends Model
     public function approval()
     {
         return $this->morphOne(Approval::class, 'approvable');
+    }
+
+    public function expedition()
+    {
+        return $this->belongsTo(Expedition::class);
     }
 }

@@ -51,4 +51,9 @@ class Order extends Model
     {
         return $this->belongsTo(RefCompign::class, 'compaign_id');
     }
+
+    public function deliverySchedule()
+    {
+        return $this->hasOne(DeliverySchedule::class, 'order_id');
+    }
 }

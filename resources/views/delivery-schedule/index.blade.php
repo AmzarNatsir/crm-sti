@@ -82,6 +82,15 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Expedition</label>
+                        <select class="form-select select2-modal" name="expedition_id">
+                            <option value="">Select Expedition</option>
+                            @foreach($expeditions as $expedition)
+                                <option value="{{ $expedition->id }}">{{ $expedition->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
@@ -124,6 +133,15 @@
                         <select class="form-select select2-modal-edit" name="employee_id[]" multiple="multiple" id="editPersonnelSelect" required>
                             @foreach($employees as $staff)
                                 <option value="{{ $staff->id }}">{{ $staff->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Expedition</label>
+                        <select class="form-select select2-modal-edit" name="expedition_id" id="editExpeditionSelect">
+                            <option value="">Select Expedition</option>
+                            @foreach($expeditions as $expedition)
+                                <option value="{{ $expedition->id }}">{{ $expedition->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -233,10 +251,15 @@
                 let personnelIds = props.personnel_ids || [];
                 $('#editPersonnelSelect').val(personnelIds).trigger('change');
                 
+                // Set Expedition Select2
+                let expeditionId = props.expedition_id || '';
+                $('#editExpeditionSelect').val(expeditionId).trigger('change');
+                
                 // Reset fields
                 let invoiceDate = props.invoice_date || '';
                 $('#editDeliveryDateInput').prop('disabled', false).prop('readonly', false).attr('min', invoiceDate);
                 $('#editPersonnelSelect').prop('disabled', false);
+                $('#editExpeditionSelect').prop('disabled', false);
                 $('#arrivalDateGroup').addClass('d-none');
                 $('#arrivalDateInput').val('').prop('required', false).attr('min', invoiceDate);
                 $('#updateBtn').removeClass('d-none').text('Update Schedule');
@@ -248,6 +271,7 @@
                     // Lock fields for completed
                     $('#editDeliveryDateInput').prop('disabled', true);
                     $('#editPersonnelSelect').prop('disabled', true);
+                    $('#editExpeditionSelect').prop('disabled', true);
                     
                     $('#updateBtn').addClass('d-none');
                     $('#deleteScheduleBtn').addClass('d-none');
@@ -257,6 +281,7 @@
                     // Approved: Lock Details, Enable Arrival Date
                     $('#editDeliveryDateInput').prop('readonly', true); // different visual than disabled
                     $('#editPersonnelSelect').prop('disabled', true);
+                    $('#editExpeditionSelect').prop('disabled', true);
                     
                     $('#arrivalDateGroup').removeClass('d-none');
                     $('#arrivalDateInput').prop('required', true);
@@ -268,13 +293,18 @@
                     // Rejected: Fully Lock
                     $('#editDeliveryDateInput').prop('disabled', true);
                     $('#editPersonnelSelect').prop('disabled', true);
+                    $('#editExpeditionSelect').prop('disabled', true);
                     
                     $('#updateBtn').addClass('d-none');
                     $('#deleteScheduleBtn').addClass('d-none');
                     $('#rejectionNotice').removeClass('d-none');
-                } else {
-                    // Submitted/Open: All Editable
+                } else if (status === 'submitted') {
+                    // Submitted: All Editable, Delete Allowed
                     // Everything is already reset to editable above
+                    // Delete button is visible (already shown in reset)
+                } else {
+                    // Any other status: Hide delete button as safety
+                    $('#deleteScheduleBtn').addClass('d-none');
                 }
 
                 $('#editScheduleModal').modal('show');

@@ -76,6 +76,11 @@ Route::middleware('auth')->group(function () {
     ->name('common-position.datatables');
     Route::resource('common-position', \App\Http\Controllers\PositionController::class);
 
+    // Expedition Module
+    Route::get('expedition/datatables', [\App\Http\Controllers\ExpeditionController::class, 'datatables'])
+    ->name('expedition.datatables');
+    Route::resource('expedition', \App\Http\Controllers\ExpeditionController::class);
+
     // Campaign Reference Module
     Route::get('ref-compign/datatables', [\App\Http\Controllers\RefCompignController::class, 'datatables'])
     ->name('ref-compign.datatables');

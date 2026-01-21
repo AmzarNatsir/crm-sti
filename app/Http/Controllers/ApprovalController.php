@@ -38,6 +38,12 @@ class ApprovalController extends Controller
             ->addColumn('details', function ($approval) {
                 if ($approval->approvable_type === 'App\Models\DeliverySchedule') {
                     $schedule = $approval->approvable;
+                    
+                    // Check if schedule still exists
+                    if (!$schedule) {
+                        return '<span class="text-muted">Delivery Schedule Deleted</span>';
+                    }
+                    
                     $order = $schedule->order;
                     
                     if (!$order) return "Delivery Schedule Details Missing";

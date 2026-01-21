@@ -103,6 +103,9 @@
                                 <a href="{{url('common-position')}}" ><i class="ti ti-settings-cog"></i><span>Position</span></a>
                             </li>
                             @endcan
+                            <li class=" {{ Request::is('expedition*') ? 'active' : '' }}">
+                                <a href="{{url('expedition')}}" ><i class="ti ti-truck-delivery"></i><span>Expedition</span></a>
+                            </li>
                         </ul>
                     </li>
                     @endcanany

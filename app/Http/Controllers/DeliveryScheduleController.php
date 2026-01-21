@@ -14,6 +14,7 @@ class DeliveryScheduleController extends Controller
     public function index()
     {
         $employees = \App\Models\Employee::where('status', 'active')->orderBy('name')->get();
+        $expeditions = \App\Models\Expedition::orderBy('name')->get();
         $events = DeliverySchedule::with(['order.customer', 'personnel', 'employee'])
             ->get()
             ->map(function ($schedule) {
@@ -47,6 +48,7 @@ class DeliveryScheduleController extends Controller
                         'status' => $schedule->status,
                         'personnel' => $employeeNames,
                         'personnel_ids' => $schedule->personnel->pluck('id')->toArray(),
+                        'expedition_id' => $schedule->expedition_id,
                         'invoice_no' => $schedule->order->invoice_no,
                         'customer' => $schedule->order->customer->name ?? 'N/A',
                         'total_amount' => number_format($schedule->order->total_amount, 2),
@@ -59,7 +61,7 @@ class DeliveryScheduleController extends Controller
                 ];
             });
 
-        return view('delivery-schedule.index', compact('events', 'employees'));
+        return view('delivery-schedule.index', compact('events', 'employees', 'expeditions'));
     }
 
     public function getInvoices(Request $request)
@@ -120,6 +122,7 @@ class DeliveryScheduleController extends Controller
                 'order_id' => $request->order_id,
                 'delivery_date' => $request->delivery_date,
                 'employee_id' => $request->employee_id[0] ?? null, 
+                'expedition_id' => $request->expedition_id ?? null, 
                 'user_id' => auth()->id(),
                 'status' => 'submitted' // Initial status
             ]);
@@ -216,8 +219,13 @@ class DeliveryScheduleController extends Controller
     {
         $schedule = DeliverySchedule::findOrFail($id);
         
-        if ($schedule->status !== 'open') {
-            return response()->json(['success' => false, 'message' => 'Only open schedules can be deleted.'], 403);
+        if ($schedule->status !== 'submitted') {
+            return response()->json(['success' => false, 'message' => 'Only submitted schedules can be deleted.'], 403);
+        }
+
+        // Delete related approval if exists
+        if ($schedule->approval) {
+            $schedule->approval->delete();
         }
 
         $schedule->delete();
