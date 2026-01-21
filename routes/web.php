@@ -129,6 +129,8 @@ Route::middleware('auth')->group(function () {
     ->name('customers-dashboard');
     Route::get('customers-dashboard/list', [\App\Http\Controllers\CustomerDashboardController::class, 'getCustomerList'])
     ->name('customers-dashboard.list');
+    Route::get('customer-lifecycle', [\App\Http\Controllers\CustomerLifecycleController::class, 'index'])
+    ->name('customer-lifecycle');
     Route::get('products-dashboard', [\App\Http\Controllers\ProductDashboardController::class, 'index'])
     ->name('products-dashboard');
     Route::get('sales-dashboard', [\App\Http\Controllers\SalesDashboardController::class, 'index'])
