@@ -150,7 +150,7 @@
                             @endcan
                             @can("telemarketing_admin")
                             <li class="{{ Request::is('admin-surveys/create') ? 'active' : '' }}">
-                                <a href="{{ url('admin-surveys/create') }}"><i class="ti ti-forms"></i><span>Admin Survey</span></a>
+                                <a href="{{ url('admin-surveys/create') }}"><i class="ti ti-forms"></i><span>Admin Marketing</span></a>
                             </li>
                             @endcan
                             @can("telemarketing_view")
