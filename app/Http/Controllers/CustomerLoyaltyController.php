@@ -110,13 +110,13 @@ class CustomerLoyaltyController extends Controller
             } elseif ($loyalty_score >= 70) {
                 $category = 'Loyal';
                 $action = 'Tinggi R dan F';
-            } elseif ($loyalty_score >= 50) {
+            } elseif ($loyalty_score >= 60) {
                 $category = 'Big Spender';
                 $action = 'Tinggi R dan M';
-            } elseif ($loyalty_score >= 30) {
+            } elseif ($loyalty_score >= 40) {
                 $category = 'Potential Loyal';
                 $action = 'Tinggi F dan M';
-             } elseif ($loyalty_score >= 15) {
+             } elseif ($loyalty_score >= 25) {
                 $category = 'Promising';
                 $action = 'Tinggi R saja';
             } else {

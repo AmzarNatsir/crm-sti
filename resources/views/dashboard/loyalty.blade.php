@@ -18,7 +18,7 @@
 
         <!-- Metric Summary -->
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm border-left-Success" style="cursor: pointer" onclick="filterCategory('Champions')">
                     <div class="card-body">
                         <h6 class="text-muted">Champions (>85)</h6>
@@ -26,7 +26,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm border-left-info" style="cursor: pointer" onclick="filterCategory('Loyal')">
                     <div class="card-body">
                         <h6 class="text-muted">Loyal (70-84)</h6>
@@ -34,26 +34,34 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm border-left-warning" style="cursor: pointer" onclick="filterCategory('Big Spender')">
                     <div class="card-body">
-                        <h6 class="text-muted">Big Spender (30-49)</h6>
+                        <h6 class="text-muted">Big Spender (60-79)</h6>
                         <h3 class="fw-bold text-warning">{{ collect($results)->where('category', 'Big Spender')->count() }}</h3>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('At Risk')">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-left-primary" style="cursor: pointer" onclick="filterCategory('Potential Loyal')">
                     <div class="card-body">
-                        <h6 class="text-muted">At Risk (<30)</h6>
-                        <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'At Risk')->count() }}</h3>
+                        <h6 class="text-muted">Potential Loyal (40-69)</h6>
+                        <h3 class="fw-bold text-primary">{{ collect($results)->where('category', 'Potential Loyal')->count() }}</h3>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('Promising')">
+                    <div class="card-body">
+                        <h6 class="text-muted">Promising (25-40)</h6>
+                        <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'Promising')->count() }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
                 <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('At Risk')">
                     <div class="card-body">
-                        <h6 class="text-muted">At Risk (<30)</h6>
+                        <h6 class="text-muted">At Risk (< 25)</h6>
                         <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'At Risk')->count() }}</h3>
                     </div>
                 </div>
