@@ -6,63 +6,163 @@
         <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
             <div>
                 <h4 class="mb-1">Customer Loyalty Dashboard (RFM)</h4>
-                <p class="text-muted mb-0">Segmentation based on Recency, Frequency, Monetary & Loyalty Score</p>
+                <p class="text-muted mb-0">Segmentation based on Recency, Frequency, & Monetary Scores</p>
             </div>
-            <!-- <div>
-                 <a href="#" class="btn btn-primary" onclick="window.print()"><i class="ti ti-printer me-2"></i>Print Report</a>
-            </div> -->
             <div>
                 <button class="btn btn-secondary btn-sm" onclick="filterCategory('')">Reset Filter</button>
             </div>
         </div>
 
+        <!-- Custom Styles for Summary Cards -->
+        <style>
+            .summary-card {
+                position: relative;
+                overflow: hidden;
+                border: none;
+                border-radius: 12px;
+                background-color: #fff; /* Ensure white background */
+                transition: transform 0.2s;
+            }
+            .summary-card:hover {
+                transform: translateY(-5px);
+            }
+            .summary-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 60px;
+                height: 60px;
+                border-top-left-radius: 12px; /* Match card radius */
+                background: inherit; /* Fallback */
+            }
+            /* Corner Accents */
+            .card-accent-success::before {
+                background: linear-gradient(135deg, #28a745 50%, transparent 50%);
+            }
+            .card-accent-info::before {
+                background: linear-gradient(135deg, #17a2b8 50%, transparent 50%);
+            }
+            .card-accent-warning::before {
+                background: linear-gradient(135deg, #ffc107 50%, transparent 50%);
+            }
+            .card-accent-primary::before {
+                background: linear-gradient(135deg, #007bff 50%, transparent 50%);
+            }
+            .card-accent-danger::before {
+                background: linear-gradient(135deg, #dc3545 50%, transparent 50%);
+            }
+            
+            .icon-circle {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            }
+            .icon-circle.success { background-color: rgba(40, 167, 69, 0.1); color: #28a745; }
+            .icon-circle.info { background-color: rgba(23, 162, 184, 0.1); color: #17a2b8; }
+            .icon-circle.warning { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; }
+            .icon-circle.primary { background-color: rgba(0, 123, 255, 0.1); color: #007bff; }
+            .icon-circle.danger { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
+        </style>
+
         <!-- Metric Summary -->
         <div class="row">
-            <div class="col-md-4">
-                <div class="card shadow-sm border-left-Success" style="cursor: pointer" onclick="filterCategory('Champions')">
-                    <div class="card-body">
-                        <h6 class="text-muted">Champions (>85)</h6>
-                        <h3 class="fw-bold text-success">{{ collect($results)->where('category', 'Champions')->count() }}</h3>
+            <!-- Champions -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm summary-card card-accent-success h-100" style="cursor: pointer" onclick="filterCategory('Champions')">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-muted fw-medium">Champions</span>
+                            <h2 class="mb-0 fw-bold mt-2">{{ collect($results)->where('category', 'Champions')->count() }}</h2>
+                            <small class="text-success"><i class="ti ti-arrow-up"></i> High Value</small>
+                        </div>
+                        <div class="icon-circle success">
+                            <i class="ti ti-trophy"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm border-left-info" style="cursor: pointer" onclick="filterCategory('Loyal')">
-                    <div class="card-body">
-                        <h6 class="text-muted">Loyal (70-84)</h6>
-                        <h3 class="fw-bold text-info">{{ collect($results)->where('category', 'Loyal')->count() }}</h3>
+
+            <!-- Loyal -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm summary-card card-accent-info h-100" style="cursor: pointer" onclick="filterCategory('Loyal')">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-muted fw-medium">Loyal</span>
+                            <h2 class="mb-0 fw-bold mt-2">{{ collect($results)->where('category', 'Loyal')->count() }}</h2>
+                            <small class="text-info"><i class="ti ti-activity"></i> Active</small>
+                        </div>
+                        <div class="icon-circle info">
+                            <i class="ti ti-thumb-up"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm border-left-warning" style="cursor: pointer" onclick="filterCategory('Big Spender')">
-                    <div class="card-body">
-                        <h6 class="text-muted">Big Spender (60-79)</h6>
-                        <h3 class="fw-bold text-warning">{{ collect($results)->where('category', 'Big Spender')->count() }}</h3>
+
+            <!-- Big Spenders -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm summary-card card-accent-warning h-100" style="cursor: pointer" onclick="filterCategory('Big Spenders')">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-muted fw-medium">Big Spenders</span>
+                            <h2 class="mb-0 fw-bold mt-2">{{ collect($results)->where('category', 'Big Spenders')->count() }}</h2>
+                            <small class="text-warning"><i class="ti ti-coin"></i> High Revenue</small>
+                        </div>
+                        <div class="icon-circle warning">
+                            <i class="ti ti-wallet"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm border-left-primary" style="cursor: pointer" onclick="filterCategory('Potential Loyal')">
-                    <div class="card-body">
-                        <h6 class="text-muted">Potential Loyal (40-69)</h6>
-                        <h3 class="fw-bold text-primary">{{ collect($results)->where('category', 'Potential Loyal')->count() }}</h3>
+
+            <!-- Potential Loyal -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm summary-card card-accent-primary h-100" style="cursor: pointer" onclick="filterCategory('Potential Loyal')">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-muted fw-medium">Potential Loyal</span>
+                            <h2 class="mb-0 fw-bold mt-2">{{ collect($results)->where('category', 'Potential Loyal')->count() }}</h2>
+                            <small class="text-primary"><i class="ti ti-trending-up"></i> Growing</small>
+                        </div>
+                        <div class="icon-circle primary">
+                            <i class="ti ti-chart-line"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('Promising')">
-                    <div class="card-body">
-                        <h6 class="text-muted">Promising (25-40)</h6>
-                        <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'Promising')->count() }}</h3>
+
+            <!-- Promising -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm summary-card card-accent-danger h-100" style="cursor: pointer" onclick="filterCategory('Promising')">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-muted fw-medium">Promising</span>
+                            <h2 class="mb-0 fw-bold mt-2">{{ collect($results)->where('category', 'Promising')->count() }}</h2>
+                            <small class="text-danger"><i class="ti ti-alert-circle"></i> Needs Attention</small>
+                        </div>
+                        <div class="icon-circle danger">
+                            <i class="ti ti-star"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm border-left-danger" style="cursor: pointer" onclick="filterCategory('At Risk')">
-                    <div class="card-body">
-                        <h6 class="text-muted">At Risk (< 25)</h6>
-                        <h3 class="fw-bold text-danger">{{ collect($results)->where('category', 'At Risk')->count() }}</h3>
+
+            <!-- At Risk -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm summary-card card-accent-danger h-100" style="cursor: pointer" onclick="filterCategory('At Risk')">
+                    <div class="card-body d-flex align-items-center justify-content-between p-4">
+                        <div>
+                            <span class="text-muted fw-medium">At Risk</span>
+                            <h2 class="mb-0 fw-bold mt-2">{{ collect($results)->where('category', 'At Risk')->count() }}</h2>
+                            <small class="text-danger"><i class="ti ti-arrow-down"></i> Low Engagement</small>
+                        </div>
+                        <div class="icon-circle danger">
+                            <i class="ti ti-alert-triangle"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,63 +171,60 @@
         <!-- Main Table -->
         <div class="card shadow-sm">
             <div class="card-header bg-transparent">
-                <h5 class="card-title mb-0">Customer Segmentation Analysis</h5>
+                <h5 class="card-title mb-0">Customer Segmentation Data</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover datatable" id="loyaltyTable">
                         <thead class="thead-light">
                             <tr>
-                                <th>Customer</th>
-                                <th title="Recency (Days)">R (Days)</th>
-                                <th title="Frequency (Count)">F (Count)</th>
-                                <th title="Monetary (Total)">M (Rp)</th>
-                                <th>RFM Code</th>
-                                <th>RFM Score</th>
-                                <th>Loyalty Score</th>
+                                <th>Customer_ID</th>
+                                <th>Komoditas</th>
+                                <th>Last_Purchase_Date</th>
+                                <th>Orders_12mo</th>
+                                <th>Spend_12mo</th>
+                                <th>Recency_Days</th>
+                                <th>Frequency</th>
+                                <th>Monetary</th>
+                                <th>R_Score</th>
+                                <th>F_Score</th>
+                                <th>M_Score</th>
+                                <th>RFM_Code</th>
                                 <th>Category</th>
-                                <th>Recommended Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($results as $row)
                             <tr>
                                 <td>
-                                    <strong>{{ $row->customer->name }}</strong><br>
-                                    <small class="text-muted">{{ $row->customer->phone ?? '-' }}</small>
+                                    <span class="fw-bold">{{ $row->customer_id }}</span>
+                                    <br><small class="text-muted">{{ $row->customer_name }}</small>
                                 </td>
-                                <td>
-                                    {{ $row->recency_days }} days
-                                    <span class="badge bg-light text-dark border ms-1">{{ $row->r_score }}</span>
-                                </td>
-                                <td>
-                                    {{ $row->frequency }}x
-                                    <span class="badge bg-light text-dark border ms-1">{{ $row->f_score }}</span>
-                                </td>
-                                <td>
-                                    {{ number_format($row->monetary, 0, ',', '.') }}
-                                    <span class="badge bg-light text-dark border ms-1">{{ $row->m_score }}</span>
-                                </td>
-                                <td><span class="badge bg-secondary">{{ $row->rfm_code }}</span></td>
-                                <td>{{ number_format($row->rfm_score_100, 1) }}</td>
-                                <td class="fw-bold">{{ number_format($row->loyalty_score, 1) }}</td>
+                                <td>{{ $row->komoditas }}</td>
+                                <td>{{ $row->last_purchase_date }}</td>
+                                <td>{{ $row->orders_12mo }}</td>
+                                <td>{{ number_format($row->spend_12mo, 0, ',', '.') }}</td>
+                                <td>{{ $row->recency_days }}</td>
+                                <td>{{ $row->frequency }}</td>
+                                <td>{{ number_format($row->monetary, 0, ',', '.') }}</td>
+                                <td>{{ $row->r_score }}</td>
+                                <td>{{ $row->f_score }}</td>
+                                <td>{{ $row->m_score }}</td>
+                                <td>{{ $row->rfm_code }}</td>
                                 <td>
                                     @if($row->category == 'Champions')
                                         <span class="badge bg-success">Champions</span>
                                     @elseif($row->category == 'Loyal')
                                         <span class="badge bg-info">Loyal</span>
-                                    @elseif($row->category == 'Big Spender')
-                                        <span class="badge bg-secondary">Big Spender</span>
+                                    @elseif($row->category == 'Big Spenders')
+                                        <span class="badge bg-warning">Big Spenders</span>
                                     @elseif($row->category == 'Potential Loyal')
-                                        <span class="badge bg-warning">Potential Loyal</span>
+                                        <span class="badge bg-primary">Potential Loyal</span>
                                     @elseif($row->category == 'Promising')
-                                        <span class="badge bg-warning">Promising</span>
+                                        <span class="badge bg-secondary">Promising</span>
                                     @else
                                         <span class="badge bg-danger">At Risk</span>
                                     @endif
-                                </td>
-                                <td class="text-sm text-wrap" style="max-width: 250px;">
-                                    {{ $row->action }}
                                 </td>
                             </tr>
                             @endforeach
@@ -146,7 +243,7 @@
         // If datatable is initialized automatically via class .datatable
         var table = $('.datatable').DataTable();
          
-        // Search in column index 7 (Category)
+        // Search in column index 12 (Category)
         // If category is empty, we search for empty string to reset (or regex for all)
         if (category) {
             // Using regex false, smart true. 
@@ -154,9 +251,9 @@
             // but "Very Loyal" vs "Loyal" -> Searching "Loyal" might match both.
             // Let's use exact match regex
              var regex = '^' + category + '$';
-            table.column(7).search(regex, true, false).draw();
+            table.column(12).search(regex, true, false).draw();
         } else {
-             table.column(7).search('').draw();
+             table.column(12).search('').draw();
         }
     }
 </script>
