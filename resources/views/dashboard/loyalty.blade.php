@@ -167,7 +167,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Main Table -->
         <div class="card shadow-sm">
             <div class="card-header bg-transparent">
@@ -228,6 +227,72 @@
                                 </td>
                             </tr>
                             @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RFM Reference Table -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-transparent">
+                <h5 class="card-title mb-0">RFM Analysis Reference</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped custom-table">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="text-white">Segment</th>
+                                <th class="text-white">R Score (Recency)</th>
+                                <th class="text-white">F Score (Frequency)</th>
+                                <th class="text-white">M Score (Monetary)</th>
+                                <th class="text-white">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold text-success">Champions</td>
+                                <td>>= 3</td>
+                                <td>>= 3</td>
+                                <td>>= 3</td>
+                                <td>Pelanggan paling berharga: pembelanja baru, sering, dan pembelanja tinggi</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-info">Loyal</td>
+                                <td>>= 3</td>
+                                <td>>= 3</td>
+                                <td>< 3 or any</td>
+                                <td>Pelanggan yang sering aktif dan dapat diandalkan</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-warning">Big Spenders</td>
+                                <td>>= 3</td>
+                                <td>any</td>
+                                <td>>= 3</td>
+                                <td>Pembeli yang aktif baru-baru ini, bernilai tinggi — mungkin tidak sering membeli</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-primary">Potential Loyal</td>
+                                <td>< 3</td>
+                                <td>>= 3 or</td>
+                                <td>>= 3</td>
+                                <td>Tidak baru-baru ini, tetapi sering digunakan untuk berbelanja atau membeli — dapat diaktifkan kembali</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-secondary">Promising</td>
+                                <td>>= 3</td>
+                                <td>< 3</td>
+                                <td>< 3</td>
+                                <td>Baru saja diakuisisi — tahap awal loyalitas, peliharalah mereka</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold text-danger">At Risk</td>
+                                <td>< 3</td>
+                                <td>< 3</td>
+                                <td>< 3</td>
+                                <td>Dingin, tidak aktif, bernilai rendah — pertimbangkan strategi menang-kembali atau keluar</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
