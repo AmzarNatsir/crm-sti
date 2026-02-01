@@ -9,6 +9,9 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TelemarketingDashboardController;
 use App\Http\Controllers\CrmDashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ParamWilayahController;
+use App\Http\Controllers\KoefMedanController;
+use App\Http\Controllers\ShippingSimulatorController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -196,6 +199,14 @@ Route::middleware('auth')->group(function () {
     Route::get('delivery-schedule/invoices', [\App\Http\Controllers\DeliveryScheduleController::class, 'getInvoices'])->name('delivery-schedule.invoices');
     Route::resource('delivery-schedule', \App\Http\Controllers\DeliveryScheduleController::class);
 
+    // Regional Parameter Module
+    Route::get('param-wilayah/datatables', [ParamWilayahController::class, 'datatables'])->name('param-wilayah.datatables');
+    Route::resource('param-wilayah', ParamWilayahController::class);
+
+    // Medan Coefficient Module
+    Route::get('koef-medan/datatables', [KoefMedanController::class, 'datatables'])->name('koef-medan.datatables');
+    Route::resource('koef-medan', KoefMedanController::class);
+
     // Report Routes
     Route::get('sales-reports', [\App\Http\Controllers\SalesReportController::class, 'index'])->name('reports.sales.index');
     Route::get('sales-reports/datatables', [\App\Http\Controllers\SalesReportController::class, 'datatables'])->name('reports.sales.datatables');
@@ -212,4 +223,7 @@ Route::middleware('auth')->group(function () {
     Route::get('approvals/datatables', [\App\Http\Controllers\ApprovalController::class, 'datatables'])->name('approvals.datatables');
     Route::post('approvals/{id}/action', [\App\Http\Controllers\ApprovalController::class, 'action'])->name('approvals.action');
     Route::get('approvals', [\App\Http\Controllers\ApprovalController::class, 'index'])->name('approvals.index');
+
+    // Shipping Simulator
+    Route::post('shipping-simulator/calculate', [ShippingSimulatorController::class, 'calculate'])->name('shipping-simulator.calculate');
 });

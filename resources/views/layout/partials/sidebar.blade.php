@@ -211,11 +211,18 @@
                             @endcan
                         </ul>
                     </li>
+                    <!-- shipping simulator -->
                     @endcanany
                     @canany(["delivery_schedule_view"])
                     <li class="menu-title"><span>LOGISTICS</span></li>
                     <li>
                         <ul>
+                            <li class="{{ Request::is('param-wilayah*') ? 'active' : '' }}">
+                                <a href="{{ route('param-wilayah.index') }}"><i class="ti ti-settings-cog"></i><span>Regional Parameter</span></a>
+                            </li>
+                            <li class="{{ Request::is('koef-medan*') ? 'active' : '' }}">
+                                <a href="{{ route('koef-medan.index') }}"><i class="ti ti-settings-cog"></i><span>Medan Coefficient</span></a>
+                            </li>
                             @can("delivery_schedule_view")
                             <li class="{{ Request::is('delivery-schedule*') ? 'active' : '' }}">
                                 <a href="{{ route('delivery-schedule.index') }}"><i class="ti ti-truck"></i><span>Delivery Schedule</span></a>
