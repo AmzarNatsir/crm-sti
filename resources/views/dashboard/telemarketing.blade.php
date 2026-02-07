@@ -39,7 +39,7 @@
             <div class="col-xl-2 col-sm-4 col-6 d-flex">
                 <div class="card flex-fill shadow-sm">
                     <div class="card-body p-3">
-                        <p class="text-sm text-muted mb-1">Kasus/Tiket</p>
+                        <p class="text-sm text-muted mb-1">Penyelesaian Masalah</p>
                         <h4 class="mb-0 fw-bold text-danger">{{ $stats['cases_tickets'] }}</h4>
                     </div>
                 </div>

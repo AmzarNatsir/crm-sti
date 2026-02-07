@@ -1518,7 +1518,7 @@
                                             <option value="Lainnya">Lainnya</option>
                                         </select>
                                         <input type="text" name="tantanganUtamaSaatIni_Lainnya" id="tantanganUtamaSaatIni_Lainnya" class="form-control mt-2 d-none" placeholder="Masukkan lainnya">
-                                    </div> 
+                                    </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Penurunan hasil estimasi (%, Angka kg/ha)</label>
                                         <input type="number" name="dampakHasil_Penurunan" class="form-control" placeholder="0">
@@ -1997,7 +1997,7 @@
             const target = $($(this).data('target'));
             const isInvLogic = $(this).data('inv-logic'); // For "Not Ready" logic
             const val = $(this).val();
-            
+
             let showCondition = false;
             if(isInvLogic) {
                 // Trigger if value is "Not Ready" or "Tidak berminat"
