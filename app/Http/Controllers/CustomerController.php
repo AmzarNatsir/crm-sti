@@ -101,7 +101,7 @@ class CustomerController extends Controller
         // district_code (customer) -> id (regency table)
         // sub_district_code (customer) -> id (district table)
         // village_code (customer) -> id (village table)
-        
+
         $regencies = $customer->province_code ? Regency::where('province_id', $customer->province_code)->orderBy('name')->get() : [];
         $districts = $customer->district_code ? District::where('regency_id', $customer->district_code)->orderBy('name')->get() : [];
         $villages = $customer->sub_district_code ? Village::where('district_id', $customer->sub_district_code)->orderBy('name')->get() : [];
@@ -181,7 +181,7 @@ class CustomerController extends Controller
     public function datatables(Request $request)
     {
         $query = Customer::query()
-            ->with(['creator', 'commodity'])
+            ->with(['creator', 'commodity', 'contact'])
             ->where('type', 'customer');
 
         if ($request->filled('commodity_id')) {
@@ -203,6 +203,7 @@ class CustomerController extends Controller
                 'uid',
                 'type',
                 'commodity_id',
+                'contact_id',
                 'name',
                 'identity_no',
                 'date_of_birth',
@@ -224,9 +225,10 @@ class CustomerController extends Controller
             ]);
 
         return DataTables::of($query)
-            ->addColumn('company', fn ($c) => $c->company_name)
-            ->addColumn('commodity_name', fn ($c) => $c->commodity ? $c->commodity->name : '-')
-            ->editColumn('created_at', fn ($c) => $c->created_at->format('Y-m-d'))
+            ->addColumn('company', fn($c) => $c->company_name)
+            ->addColumn('commodity_name', fn($c) => $c->commodity ? $c->commodity->name : '-')
+            ->addColumn('jenis_kontak', fn($c) => $c->contact ? $c->contact->jenisKontak : '-')
+            ->editColumn('created_at', fn($c) => $c->created_at->format('Y-m-d'))
             ->make(true);
     }
     public function summary($id)
@@ -274,7 +276,7 @@ class CustomerController extends Controller
             ->get()
             ->pluck('count', 'hour')
             ->toArray();
-            
+
         $shoppingTime = array_fill(0, 24, 0);
         foreach ($hourlyStats as $hour => $count) {
             $shoppingTime[$hour] = $count;
@@ -312,20 +314,20 @@ class CustomerController extends Controller
 
         try {
             $file = $request->file('file');
-            
+
             // Create import instance
             $import = new CustomerImport();
-            
+
             // Process the file
             Excel::import($import, $file);
-            
+
             // Get validation results
             $validRows = $import->getValidRows();
             $invalidRows = $import->getInvalidRows();
-            
+
             // Prepare preview data (limit to first 100 rows for performance)
             $previewData = array_slice($validRows, 0, 100);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -355,26 +357,26 @@ class CustomerController extends Controller
 
         try {
             $file = $request->file('file');
-            
+
             // Create import instance
             $import = new CustomerImport();
-            
+
             // First, validate all rows
             Excel::import($import, $file);
-            
+
             // Get valid rows count for progress tracking
             $totalValid = $import->getTotalValidRows();
-            
+
             if ($totalValid === 0) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No valid rows to import'
                 ], 400);
             }
-            
+
             // Process the import
             $result = $import->import();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [

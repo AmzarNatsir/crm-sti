@@ -28,7 +28,7 @@ class SalesController extends Controller
         $products = Product::with('prices')->where('is_active', 1)->get();
         $payment_methods = PaymentMethodModel::all();
         $campaigns = RefCompign::where('status', 'active')->get();
-        
+
         return view('sales.create', compact('customers', 'products', 'payment_methods', 'campaigns'));
     }
 
@@ -45,7 +45,7 @@ class SalesController extends Controller
             }
             $request->merge(['items' => $items]);
         }
-        
+
         if ($request->has('invoice_discount')) {
             $val = str_replace(['.', ','], ['', '.'], $request->invoice_discount);
             $request->merge(['invoice_discount' => $val !== '' ? $val : 0]);
@@ -103,13 +103,13 @@ class SalesController extends Controller
                 'status' => 'Completed',
                 'notes' => 'New Sale recorded: ' . $order->invoice_no . ' - Total: ' . number_format($request->total_amount, 2)
             ]);
-            
+
             // New logic: Change customer type from prospect to customer if they make a purchase
             $customer = Customer::find($request->customer_id);
             if ($customer && $customer->type === 'prospect') {
                 $customer->update(['type' => 'customer']);
-                 $customer->update(['created_at' => now()]);
-                 $customer->update(['updated_at' => now()]);
+                $customer->update(['created_at' => now()]);
+                $customer->update(['updated_at' => now()]);
                 // Save activity type promote_to_customer type completed
                 \App\Models\Activity::create([
                     'customer_id' => $customer->id,
@@ -128,6 +128,110 @@ class SalesController extends Controller
             DB::rollBack();
             \Log::error('Sales Store Error: ' . $e->getMessage());
             return back()->with('error', 'Error creating order: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    public function edit($id)
+    {
+        $order = Order::with('items')->findOrFail($id);
+        if ($order->delivery_status !== 'open' && !empty($order->delivery_status)) {
+            return redirect()->route('sales.index')->with('error', 'Cannot edit order with status ' . $order->delivery_status);
+        }
+
+        $customers = Customer::whereIn('type', ['customer', 'prospect'])->orderBy('created_at', 'desc')->get();
+        $products = Product::with('prices')->where('is_active', 1)->get();
+        $payment_methods = PaymentMethodModel::all();
+        $campaigns = RefCompign::where('status', 'active')->get();
+
+        return view('sales.edit', compact('order', 'customers', 'products', 'payment_methods', 'campaigns'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        if ($order->delivery_status !== 'open' && !empty($order->delivery_status)) {
+            return back()->with('error', 'Cannot edit order with status ' . $order->delivery_status);
+        }
+
+        // Sanitize input
+        if ($request->has('items')) {
+            $items = $request->items;
+            foreach ($items as $key => $item) {
+                if (isset($item['price'])) {
+                    $val = str_replace(['.', ','], ['', '.'], $item['price']);
+                    $items[$key]['price'] = $val !== '' ? $val : 0;
+                }
+            }
+            $request->merge(['items' => $items]);
+        }
+
+        if ($request->has('invoice_discount')) {
+            $val = str_replace(['.', ','], ['', '.'], $request->invoice_discount);
+            $request->merge(['invoice_discount' => $val !== '' ? $val : 0]);
+        }
+
+        if ($request->has('shipping_cost')) {
+            $val = str_replace(['.', ','], ['', '.'], $request->shipping_cost);
+            $request->merge(['shipping_cost' => $val !== '' ? $val : 0]);
+        }
+
+        $request->validate([
+            'customer_id' => 'required',
+            'invoice_no' => 'required|string|max:50',
+            'invoice_date' => 'required|string',
+            'payment_method_id' => 'required',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required',
+            'items.*.qty' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $order->update([
+                'customer_id' => $request->customer_id,
+                'invoice_no' => $request->invoice_no,
+                'invoice_date' => Carbon::parse($request->invoice_date)->format('Y-m-d'),
+                'total_amount' => $request->total_amount,
+                'payment_method_id' => $request->payment_method_id,
+                'payment_status' => $request->payment_status ?? 'paid',
+                'compaign_id' => $request->compaign_id,
+                'invoice_discount' => $request->invoice_discount ?? 0,
+                'shipping_cost' => $request->shipping_cost ?? 0,
+            ]);
+
+            // Clear existing items and recreate
+            OrderItemsModel::where('order_id', $order->id)->delete();
+
+            foreach ($request->items as $item) {
+                OrderItemsModel::create([
+                    'uid' => (string) Str::uuid(),
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'price_type' => $item['price_type'] ?? null,
+                    'qty' => $item['qty'],
+                    'price' => $item['price'],
+                    'subtotal' => $item['qty'] * $item['price'],
+                ]);
+            }
+
+            \App\Models\Activity::create([
+                'customer_id' => $request->customer_id,
+                'user_id' => auth()->id(),
+                'type' => 'sales',
+                'status' => 'Completed',
+                'notes' => 'Sale edit recorded: ' . $order->invoice_no . ' - New Total: ' . number_format($request->total_amount, 2)
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('sales.index')->with('success', 'Order updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Sales Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Error updating order: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -150,7 +254,7 @@ class SalesController extends Controller
         }
 
         $orders = $query->orderBy('created_at', 'desc')->get();
-        
+
         return response()->json([
             'data' => $orders->map(function ($order, $index) {
                 return [
@@ -163,10 +267,12 @@ class SalesController extends Controller
                     'status' => $order->payment_status,
                     'delivery_status' => $order->delivery_status ?? 'open',
                     'action' => '<div class="d-flex align-items-center gap-1">
-                                    <a href="' . route('sales.show', $order->id) . '" class="btn btn-sm btn-info" title="View"><i class="ti ti-eye"></i></a>' . 
-                                    (($order->delivery_status === 'completed' && auth()->user()->can('approval_center_view')) ? 
-                                    '<button onclick="cancelInvoice(' . $order->id . ')" class="btn btn-sm btn-danger" title="Cancel Invoice"><i class="ti ti-x"></i></button>' : '') . 
-                                 '</div>'
+                                    <a href="' . route('sales.show', $order->id) . '" class="btn btn-sm btn-info" title="View"><i class="ti ti-eye"></i></a>' .
+                        (($order->delivery_status === 'open' || empty($order->delivery_status)) ?
+                            '<a href="' . route('sales.edit', $order->id) . '" class="btn btn-sm btn-warning" title="Edit"><i class="ti ti-edit"></i></a>' : '') .
+                        (($order->delivery_status === 'completed' && auth()->user()->can('approval_center_view')) ?
+                            '<button onclick="cancelInvoice(' . $order->id . ')" class="btn btn-sm btn-danger" title="Cancel Invoice"><i class="ti ti-x"></i></button>' : '') .
+                        '</div>'
                 ];
             })
         ]);
@@ -188,7 +294,7 @@ class SalesController extends Controller
             DB::beginTransaction();
 
             $order = Order::findOrFail($id);
-            
+
             // Update order status
             $order->update([
                 'delivery_status' => 'rejected',

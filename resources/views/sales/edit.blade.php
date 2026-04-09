@@ -12,11 +12,12 @@
 
             <div class="card rounded-0 mb-0">
                 <div class="card-header">
-                    <h6 class="fw-bold m-0"> New Sale {{ Route::currentRouteName() }}</h6>
+                    <h6 class="fw-bold m-0"> Edit Sale {{$order->invoice_no}}</h6>
                 </div>
 
-                <form action="{{route('sales.store')}}" method="POST" id="sales-form">
+                <form action="{{route('sales.update', $order->id)}}" method="POST" id="sales-form">
                     @csrf
+                    @method('PUT')
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-4 col-md-6">
@@ -25,7 +26,7 @@
                                     <select class="form-select select2" name="customer_id" required>
                                         <option value="">Select Customer</option>
                                         @foreach($customers as $customer)
-                                            <option value="{{$customer->id}}">{{$customer->name}} ({{$customer->type}})</option>
+                                            <option value="{{$customer->id}}" {{$order->customer_id == $customer->id ? 'selected' : ''}}>{{$customer->name}} ({{$customer->type}})</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -34,7 +35,7 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Invoice No <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="invoice_no" value="INV-{{time()}}" required>
+                                    <input type="text" class="form-control" name="invoice_no" value="{{$order->invoice_no}}" required>
                                 </div>
                             </div>
 
@@ -44,7 +45,7 @@
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" 
                                         name="invoice_date" 
-                                        value="{{date('Y-m-d')}}" 
+                                        value="{{$order->invoice_date->format('Y-m-d')}}" 
                                         placeholder="dd/mm/yyyy" 
                                         required
                                         data-provider="flatpickr" 
@@ -64,7 +65,7 @@
                                     <select class="form-select select2" name="payment_method_id" required>
                                         <option value="">Select Method</option>
                                         @foreach($payment_methods as $method)
-                                            <option value="{{$method->id}}">{{$method->name}}</option>
+                                            <option value="{{$method->id}}" {{$order->payment_method_id == $method->id ? 'selected' : ''}}>{{$method->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -76,7 +77,7 @@
                                     <select class="form-select select2" name="compaign_id">
                                         <option value="">Select Campaign</option>
                                         @foreach($campaigns as $campaign)
-                                            <option value="{{$campaign->id}}">{{$campaign->name}}</option>
+                                            <option value="{{$campaign->id}}" {{$order->compaign_id == $campaign->id ? 'selected' : ''}}>{{$campaign->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -86,8 +87,8 @@
                                 <div class="mb-3">
                                     <label class="form-label">Payment Status</label>
                                     <select class="form-select" name="payment_status">
-                                        <option value="paid">Paid</option>
-                                        <option value="unpaid">Unpaid</option>
+                                        <option value="paid" {{$order->payment_status == 'paid' ? 'selected' : ''}}>Paid</option>
+                                        <option value="unpaid" {{$order->payment_status == 'unpaid' ? 'selected' : ''}}>Unpaid</option>
                                     </select>
                                 </div>
                             </div>
@@ -106,15 +107,17 @@
                                             </tr>
                                         </thead>
                                         <tbody class="invoices-list">
+                                            @foreach($order->items as $index => $item)
                                             <tr class="invoices-list-item">
                                                 <td>
-                                                    <select class="form-select product-select select2" name="items[0][product_id]" required>
+                                                    <select class="form-select product-select select2" name="items[{{$index}}][product_id]" required>
                                                         <option value="">Select Product</option>
                                                         @foreach($products as $product)
                                                             @php
                                                                 $prices = $product->prices->pluck('price', 'type')->toArray();
                                                             @endphp
                                                             <option value="{{$product->id}}" 
+                                                                {{$item->product_id == $product->id ? 'selected' : ''}}
                                                                 data-price-cs="{{ isset($prices['CS']) ? (int)$prices['CS'] : 0 }}"
                                                                 data-price-r1="{{ isset($prices['R1']) ? (int)$prices['R1'] : 0 }}"
                                                                 data-price-r2="{{ isset($prices['R2']) ? (int)$prices['R2'] : 0 }}" 
@@ -125,18 +128,19 @@
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <select class="form-select type-select" name="items[0][price_type]" required>
-                                                        <option value="CS">CS</option>
-                                                        <option value="R1">R1</option>
-                                                        <option value="R2">R2</option>
-                                                        <option value="FG">FG</option>
+                                                    <select class="form-select type-select" name="items[{{$index}}][price_type]" required>
+                                                        <option value="CS" {{$item->price_type == 'CS' ? 'selected' : ''}}>CS</option>
+                                                        <option value="R1" {{$item->price_type == 'R1' ? 'selected' : ''}}>R1</option>
+                                                        <option value="R2" {{$item->price_type == 'R2' ? 'selected' : ''}}>R2</option>
+                                                        <option value="FG" {{$item->price_type == 'FG' ? 'selected' : ''}}>FG</option>
                                                     </select>
                                                 </td>
-                                                <td><input type="text" class="form-control price-input" name="items[0][price]" required></td>
-                                                <td><input type="number" class="form-control qty-input" name="items[0][qty]" value="1" min="1" required></td>
-                                                <td><input type="text" class="form-control subtotal-input" readonly value="0"></td>
+                                                <td><input type="text" class="form-control price-input" name="items[{{$index}}][price]" value="{{ (int)$item->price }}" required></td>
+                                                <td><input type="number" class="form-control qty-input" name="items[{{$index}}][qty]" value="{{$item->qty}}" min="1" required></td>
+                                                <td><input type="text" class="form-control subtotal-input" readonly value="{{ (int)$item->subtotal }}"></td>
                                                 <td><button type="button" class="btn remove-item btn-sm text-danger"><i class="ti ti-trash"></i></button></td>
                                             </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                     <button type="button" class="btn btn-sm btn-primary mt-2" id="add-item"><i class="ti ti-plus me-1"></i>Add Item</button>
@@ -152,11 +156,11 @@
                                     </div>
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <h6 class="fs-14 fw-normal text-dark">Discount</h6>
-                                        <input type="text" class="form-control form-control-sm w-50" name="invoice_discount" id="invoice-discount" value="0">
+                                        <input type="text" class="form-control form-control-sm w-50" name="invoice_discount" id="invoice-discount" value="{{ (int)$order->invoice_discount }}">
                                     </div>
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <h6 class="fs-14 fw-normal text-dark">Shipping Cost (Rp)</h6>
-                                        <input type="text" class="form-control form-control-sm w-50" name="shipping_cost" id="shipping-cost" value="0">
+                                        <input type="text" class="form-control form-control-sm w-50" name="shipping_cost" id="shipping-cost" value="{{ (int)$order->shipping_cost }}">
                                     </div>
                                     <div class="d-flex align-items-center justify-content-between mb-2 border-top pt-2">
                                         <h6 class="fs-18 fw-bold">Total</h6>
@@ -203,7 +207,7 @@
     }
     $(document).ready(function() {
         initMask();
-        let itemCount = 1;
+        let itemCount = {{ count($order->items) }};
 
         // Initialize Select2
         function initSelect2(element) {
@@ -215,6 +219,25 @@
 
         initSelect2($('.select2'));
 
+        // Calculate initial rows and grand total
+        function getNumericValueLocal(val) {
+            if (!val) return 0;
+            return parseFloat(val.toString().replace(/\./g, '').replace(',', '.')) || 0;
+        }
+        
+        $('.invoices-list-item').each(function() {
+            let row = $(this);
+            let price = getNumericValueLocal(row.find('.price-input').val());
+            let qty = parseInt(row.find('.qty-input').val()) || 0;
+            let subtotal = price * qty;
+            row.find('.subtotal-input').val(subtotal.toLocaleString('id-ID', {minimumFractionDigits: 0}));
+            row.find('.subtotal-input').data('value', subtotal);
+        });
+        
+        // Let calculateGrandTotal be defined first, so we wait until it's defined to call it or just let the document input trigger it if needed. 
+        // Wait, function declarations are hoisted, but calculateGrandTotal is declared inside document ready. Yes it hoisted to document ready scope.
+        // It's safe to call it if we move the call after its declaration.
+        
         function getNumericValue(val) {
             if (!val) return 0;
             // Remove group separator (dot) and replace radix point (comma) with dot
@@ -333,6 +356,9 @@
         $(document).on('input', '#invoice-discount, #shipping-cost', function() {
             calculateGrandTotal();
         });
+
+        // Initialize empty calculateGrandTotal if not calculated before
+        calculateGrandTotal();
     });
 </script>
 @endpush

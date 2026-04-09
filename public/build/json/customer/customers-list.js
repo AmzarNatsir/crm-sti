@@ -27,7 +27,7 @@ $(document).ready(function () {
                 url: window.customersDatatableUrl,
                 data: function (d) {
                     d.commodity_id = $('#filter_commodity').val();
-                    d.name = $('#filter_name').val();
+                    d.name = $('#filter_name').val() || $('#search_name').val();
                     d.identity_no = $('#filter_identity_no').val();
                     d.phone = $('#filter_phone').val();
                 }
@@ -66,6 +66,14 @@ $(document).ready(function () {
                 // },
                 { data: 'commodity_name', name: 'commodity_name' },
                 { data: 'name', name: 'name' },
+                {
+                    data: 'jenis_kontak',
+                    name: 'jenis_kontak',
+                    render: function (data) {
+                        return data && data !== '-' ? '<span class="badge badge-soft-info">' + data + '</span>' : '-';
+                    },
+                    orderable: false, searchable: false
+                },
                 { data: 'identity_no', name: 'identity_no' },
                 { data: 'date_of_birth', name: 'date_of_birth' },
                 { data: 'company', name: 'company_name' },
@@ -100,7 +108,17 @@ $(document).ready(function () {
         $('#filter_name').val('');
         $('#filter_identity_no').val('');
         $('#filter_phone').val('');
+        $('#search_name').val('');
         $('#customers_list').DataTable().ajax.reload();
+    });
+
+    // Live search on the search bar
+    let searchTimeout;
+    $(document).on('input', '#search_name', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function () {
+            $('#customers_list').DataTable().ajax.reload();
+        }, 400);
     });
 
     // Add Customer button
