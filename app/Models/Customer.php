@@ -98,4 +98,9 @@ class Customer extends Model
     {
         return $this->belongsTo(User::class, 'followup_user_id');
     }
+
+    public function surveyBagianUmum()
+    {
+        return $this->hasOne(SurveyBagianUmum::class, 'contact_id', 'contact_id');
+    }
 }

@@ -3,8 +3,8 @@
 @section('content')
 
     <!-- ========================
-                                Start Page Content
-                            ========================= -->
+                                        Start Page Content
+                                    ========================= -->
 
     <div class="page-wrapper">
 
@@ -131,7 +131,7 @@
                             <!-- <th>Type</th> -->
                             <th>Commodity</th>
                             <th>Customer Name</th>
-                            <th>Customer Type</th>
+                            <th>Shop/Retailer</th>
                             <th>Identity No</th>
                             <th>Date of Birth</th>
                             <th>Company Name</th>
@@ -167,8 +167,8 @@
     </div>
 
     <!-- ========================
-                                End Page Content
-                            ========================= -->
+                                        End Page Content
+                                    ========================= -->
 
     <!-- Offcanvas Add/Edit -->
     <div class="offcanvas offcanvas-end offcanvas-large" tabindex="-1" id="offcanvas_add">

@@ -181,7 +181,7 @@ class CustomerController extends Controller
     public function datatables(Request $request)
     {
         $query = Customer::query()
-            ->with(['creator', 'commodity', 'contact'])
+            ->with(['creator', 'commodity', 'contact', 'surveyBagianUmum.tokoPengecer'])
             ->where('type', 'customer');
 
         if ($request->filled('commodity_id')) {
@@ -227,7 +227,15 @@ class CustomerController extends Controller
         return DataTables::of($query)
             ->addColumn('company', fn($c) => $c->company_name)
             ->addColumn('commodity_name', fn($c) => $c->commodity ? $c->commodity->name : '-')
-            ->addColumn('jenis_kontak', fn($c) => $c->contact ? $c->contact->jenisKontak : '-')
+            ->addColumn('jenis_kontak', function ($c) {
+                $jenis = $c->contact ? $c->contact->jenisKontak : '-';
+                if ($jenis == 'Shop/Retailer') {
+                    return $c->surveyBagianUmum && $c->surveyBagianUmum->tokoPengecer
+                        ? $c->surveyBagianUmum->tokoPengecer->profil_NamaToko
+                        : $jenis;
+                }
+                return '';
+            })
             ->editColumn('created_at', fn($c) => $c->created_at->format('Y-m-d'))
             ->make(true);
     }
