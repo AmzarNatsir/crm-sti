@@ -57,8 +57,8 @@
         </div>
         <div class="col-md-6">
             <div class="mb-3">
-                <label class="form-label">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control" name="email" value="{{ $customer->email }}" required>
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" value="{{ $customer->email }}">
             </div>
         </div>
         <div class="col-md-12">
@@ -171,7 +171,7 @@
             $provinceSelect.on('change', function() {
                 updateName(this, provinceName);
                 const provinceId = this.value;
-                
+
                 // Clear and disable child dropdowns
                 $regencySelect.html('<option value="">Select District / Kabupaten</option>').prop('disabled', true).trigger('change.select2');
                 $districtSelect.html('<option value="">Select Sub-District / Kecamatan</option>').prop('disabled', true).trigger('change.select2');
@@ -194,7 +194,7 @@
             $regencySelect.on('change', function() {
                 updateName(this, regencyName);
                 const regencyId = this.value;
-                
+
                 $districtSelect.html('<option value="">Select Sub-District / Kecamatan</option>').prop('disabled', true).trigger('change.select2');
                 $villageSelect.html('<option value="">Select Village / Desa</option>').prop('disabled', true).trigger('change.select2');
 
@@ -215,7 +215,7 @@
             $districtSelect.on('change', function() {
                 updateName(this, districtName);
                 const districtId = this.value;
-                
+
                 $villageSelect.html('<option value="">Select Village / Desa</option>').prop('disabled', true).trigger('change.select2');
 
                 if (districtId) {
