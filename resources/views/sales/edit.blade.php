@@ -26,7 +26,15 @@
                                     <select class="form-select select2" name="customer_id" required>
                                         <option value="">Select Customer</option>
                                         @foreach($customers as $customer)
-                                            <option value="{{$customer->id}}" {{$order->customer_id == $customer->id ? 'selected' : ''}}>{{$customer->name}} ({{$customer->type}})</option>
+                                            @php
+                                                $customerLabel = $customer->name;
+                                                if ($customer->contact && $customer->contact->jenisKontak == 'Shop/Retailer') {
+                                                    if ($customer->surveyBagianUmum && $customer->surveyBagianUmum->tokoPengecer) {
+                                                        $customerLabel .= ' - ' . $customer->surveyBagianUmum->tokoPengecer->profil_NamaToko;
+                                                    }
+                                                }
+                                            @endphp
+                                            <option value="{{$customer->id}}" {{$order->customer_id == $customer->id ? 'selected' : ''}}>{{$customerLabel}} ({{$customer->type}})</option>
                                         @endforeach
                                     </select>
                                 </div>

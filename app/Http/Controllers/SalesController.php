@@ -24,7 +24,10 @@ class SalesController extends Controller
 
     public function create()
     {
-        $customers = Customer::whereIn('type', ['customer', 'prospect'])->orderBy('created_at', 'desc')->get();
+        $customers = Customer::with(['contact', 'surveyBagianUmum.tokoPengecer'])
+            ->whereIn('type', ['customer', 'prospect'])
+            ->orderBy('created_at', 'desc')
+            ->get();
         $products = Product::with('prices')->where('is_active', 1)->get();
         $payment_methods = PaymentMethodModel::all();
         $campaigns = RefCompign::where('status', 'active')->get();
@@ -138,7 +141,10 @@ class SalesController extends Controller
             return redirect()->route('sales.index')->with('error', 'Cannot edit order with status ' . $order->delivery_status);
         }
 
-        $customers = Customer::whereIn('type', ['customer', 'prospect'])->orderBy('created_at', 'desc')->get();
+        $customers = Customer::with(['contact', 'surveyBagianUmum.tokoPengecer'])
+            ->whereIn('type', ['customer', 'prospect'])
+            ->orderBy('created_at', 'desc')
+            ->get();
         $products = Product::with('prices')->where('is_active', 1)->get();
         $payment_methods = PaymentMethodModel::all();
         $campaigns = RefCompign::where('status', 'active')->get();
