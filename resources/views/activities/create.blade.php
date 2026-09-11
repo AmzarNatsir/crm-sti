@@ -43,6 +43,7 @@
                                         <option value="Email">Email</option>
                                         <option value="Meeting">Meeting</option>
                                         <option value="Task">Task</option>
+                                        <option value="Visit">Visit</option>
                                         <option value="WhatsApp">WhatsApp</option>
                                     </select>
                                 </div>

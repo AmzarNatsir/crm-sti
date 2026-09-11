@@ -219,6 +219,11 @@ Route::middleware('auth')->group(function () {
     Route::get('sales-delivery-reports/export/pdf', [\App\Http\Controllers\SalesDeliveryReportController::class, 'exportPdf'])->name('reports.sales-delivery.export.pdf');
     Route::get('sales-delivery-reports/export/excel', [\App\Http\Controllers\SalesDeliveryReportController::class, 'exportExcel'])->name('reports.sales-delivery.export.excel');
 
+    Route::get('customer-visit-ranking', [\App\Http\Controllers\CustomerVisitReportController::class, 'index'])->name('reports.customer-visit.index');
+    Route::get('customer-visit-ranking/datatables', [\App\Http\Controllers\CustomerVisitReportController::class, 'datatables'])->name('reports.customer-visit.datatables');
+    Route::get('customer-visit-ranking/export/excel', [\App\Http\Controllers\CustomerVisitReportController::class, 'exportExcel'])->name('reports.customer-visit.export.excel');
+    Route::get('customer-visit-ranking/{customer}/visits', [\App\Http\Controllers\CustomerVisitReportController::class, 'visits'])->name('reports.customer-visit.visits');
+
     // Approval Center Routes
     Route::get('approvals/datatables', [\App\Http\Controllers\ApprovalController::class, 'datatables'])->name('approvals.datatables');
     Route::post('approvals/{id}/action', [\App\Http\Controllers\ApprovalController::class, 'action'])->name('approvals.action');

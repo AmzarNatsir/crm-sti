@@ -103,4 +103,9 @@ class Customer extends Model
     {
         return $this->hasOne(SurveyBagianUmum::class, 'contact_id', 'contact_id');
     }
+
+    public function surveys()
+    {
+        return $this->hasMany(SurveyBagianUmum::class, 'contact_id', 'contact_id');
+    }
 }

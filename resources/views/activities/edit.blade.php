@@ -44,6 +44,7 @@
                                         <option value="Email" {{ $activity->type == 'Email' ? 'selected' : '' }}>Email</option>
                                         <option value="Meeting" {{ $activity->type == 'Meeting' ? 'selected' : '' }}>Meeting</option>
                                         <option value="Task" {{ $activity->type == 'Task' ? 'selected' : '' }}>Task</option>
+                                        <option value="Visit" {{ $activity->type == 'Visit' ? 'selected' : '' }}>Visit</option>
                                         <option value="WhatsApp" {{ $activity->type == 'WhatsApp' ? 'selected' : '' }}>WhatsApp</option>
                                     </select>
                                 </div>

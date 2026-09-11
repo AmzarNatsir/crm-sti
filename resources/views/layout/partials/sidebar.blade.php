@@ -264,13 +264,13 @@
                         </ul>
                     </li>
                 @endcanany
-                @canany(["report_sales_view", "report_delivery_sales_view"])
+                @canany(["report_sales_view", "report_delivery_sales_view", "report_customer_visit_view"])
                     <li class="menu-title"><span>Reports</span></li>
                     <li>
                         <ul>
                             <li class="submenu">
-                                <a href="javascript:void(0);"
-                                    class="{{ Request::is('sales-reports', 'sales-delivery-reports') ? 'subdrop active' : '' }}">
+                                    <a href="javascript:void(0);"
+                                    class="{{ Request::is('sales-reports', 'sales-delivery-reports', 'customer-visit-ranking') ? 'subdrop active' : '' }}">
                                     <i class="ti ti-report-analytics"></i><span>Reports</span><span
                                         class="menu-arrow"></span>
                                 </a>
@@ -282,6 +282,10 @@
                                     @can("report_delivery_sales_view")
                                         <li><a class="{{ Request::is('sales-delivery-reports') ? 'active' : '' }}"
                                                 href="{{ url('sales-delivery-reports') }}">Sales Delivery Reports</a></li>
+                                    @endcan
+                                    @can("report_customer_visit_view")
+                                        <li><a class="{{ Request::is('customer-visit-ranking') ? 'active' : '' }}"
+                                                href="{{ route('reports.customer-visit.index') }}">Customer Visit Ranking</a></li>
                                     @endcan
                                 </ul>
                             </li>

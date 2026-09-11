@@ -23,6 +23,7 @@ class PermissionSeeder extends Seeder
             'Users',
             'Roles',
             'Products',
+            'Report',
         ];
 
         $subjectModels = [];
@@ -39,6 +40,7 @@ class PermissionSeeder extends Seeder
             'Users' => ['view', 'create', 'update', 'delete', 'manage'],
             'Roles' => ['view', 'create', 'update', 'delete', 'manage'],
             'Products' => ['view', 'create', 'update', 'delete', 'manage'],
+            'Report' => ['customer_visit_view'],
         ];
 
         foreach ($permissions as $subjectName => $actions) {
